@@ -1,5 +1,6 @@
 package com.airse.trickynumbers;
 
+import com.airse.trickynumbers.models.MyColor;
 import com.airse.trickynumbers.states.GameStateManager;
 import com.airse.trickynumbers.states.LoadingState;
 import com.badlogic.gdx.ApplicationAdapter;
@@ -7,29 +8,22 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+
+import java.util.Random;
 
 public class TrickyNumbers extends ApplicationAdapter {
 
 	public static final int WIDTH = 320;
-	public static final int HEIGHT = 480;
+	public static final int HEIGHT = 512;
 	public static final String TITLE = "Tricky Numbers";
 
-	public static final String PINK400 = "f50057";
-	public static final String YELLOW400 = "ffea00";
-	public static final String YELLOW700 = "ffd600";
-	public static final String TEAL400 = "1de9b6";
-	public static final String TEAL700 = "00bfa5";
-	public static final String DEEPPURPLE400 = "651fff";
-	public static final String PURPLE400 = "ab47bc";
-	public static final String LIGHT_BLUE700 = "0091ea";
-	public static final String LIME700 = "aeea00";
-	public static final String GREAN400 = "00e676";
-
+	public static final String TEXT_COLOR = "ffffff";
 
 	private GameStateManager gsm;
 	private SpriteBatch sb;
 	private AssetManager manager;
-
 
 	@Override
 	public void create () {
@@ -37,9 +31,8 @@ public class TrickyNumbers extends ApplicationAdapter {
 		sb = new SpriteBatch();
 		gsm = new GameStateManager();
 		manager = new AssetManager();
-		Gdx.gl.glClearColor(0.05f, 0.1f, 0.15f, 1);
+		Gdx.gl.glClearColor(0, 0, 0, 1);
 		gsm.push(new LoadingState(manager, gsm));
-
 	}
 	@Override
 	public void resize(int width, int height){
@@ -59,4 +52,5 @@ public class TrickyNumbers extends ApplicationAdapter {
 		sb.dispose();
 		manager.dispose();
 	}
+
 }

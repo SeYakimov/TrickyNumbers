@@ -23,63 +23,63 @@ public class MyButton {
     private static final String BORDER = "c5c4c4";
     private int GAP;
     private int RADIUS;
-    //private Texture up, down;
     private String text;
     private int textSize;
     private Rectangle bounds;
     private Rectangle origin;
     private boolean isPressed;
-    private ShapeRenderer shape;
     private BitmapFont font;
     private GlyphLayout glyphLayout;
     private Color textColor;
+    private MyColor btnColor;
+    private int w, h;
+    private Vector2 zero;
 
-    public MyButton(String text, int textSize, Color textColor, int posX, int posY, int width, int height, BitmapFont font){
+    public MyButton(String text, int textSize, MyColor buttonColor, int posX, int posY, int width, int height, BitmapFont font){
         this.text = text;
         this.textSize = textSize;
-        this.textColor = textColor;
+        this.textColor = Color.WHITE;
+        this.btnColor = buttonColor;
         bounds = new Rectangle(posX, posY, width, height);
         origin = new Rectangle(posX, posY, width, height);
         this.font = font;
 
-        GAP = Gdx.graphics.getWidth() / 80;
+        w = Gdx.graphics.getWidth();
+        h = Gdx.graphics.getHeight();
+        GAP = w / 80;
         RADIUS = 2 * GAP;
         isPressed = false;
-        shape = new ShapeRenderer();
         glyphLayout = new GlyphLayout();
-        originSpeed = Gdx.app.getGraphics().getWidth() / 4;
+        originSpeed = w / 4;
         speed = originSpeed;
+        zero = new Vector2(0, 0);
     }
 
     public void update(float dt){
-        bounds.x = Math.max(bounds.x - dt * speed, 0);
-        bounds.width = Math.min(bounds.width + dt * 2 * speed, Gdx.app.getGraphics().getWidth());
+        bounds.x = Math.max(bounds.x - dt * speed, zero.x);
+        bounds.width = Math.min(bounds.width + dt * 2 * speed, w);
     }
 
-    public void render(SpriteBatch sb) {
-        sb.begin();
+    public void render(SpriteBatch sb, ShapeRenderer shape) {
+
         if (isPressed){
-            drawPressedButtonWithoutText();
-            sb.end();
+            drawPressedButtonWithoutText(shape);
             printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 - GAP, 0, text, textColor);
         }
         else{
-            drawNotPressedButtonWithoutText();
-            sb.end();
+            drawNotPressedButtonWithoutText(shape);
             printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 + GAP, 0, text, textColor);
         }
 
     }
 
     public void dispose(){
-        shape.dispose();
         font.dispose();
     }
 
     public Rectangle getBounds() {
         return bounds;
     }
-
     public void setBoundsToOriginPosition() {
         bounds.x = origin.x;
         bounds.y = origin.y;
@@ -98,7 +98,6 @@ public class MyButton {
     public int getNumber() {
         return Integer.parseInt(text);
     }
-
     public void setNumber(int number) {
         text = "" + number;
     }
@@ -126,17 +125,17 @@ public class MyButton {
         sb.setTransformMatrix(oldTransformMatrix);
     }
 
-    private void drawNotPressedButtonWithoutText(){
+    private void drawNotPressedButtonWithoutText(ShapeRenderer shape){
         //Shadow
         shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.setColor(Color.valueOf(SHADOW));
+        shape.setColor(btnColor.a700); // Color
         shape.circle(bounds.x + bounds.width - RADIUS, bounds.y + RADIUS, RADIUS);
         shape.circle(bounds.x + RADIUS, bounds.y + RADIUS, RADIUS);
         shape.rect(bounds.x + RADIUS, bounds.y, bounds.width - RADIUS * 2, RADIUS * 2);
         shape.rect(bounds.x, bounds.y + RADIUS, bounds.width, RADIUS * 2);
 
         //Button
-        shape.setColor(Color.WHITE);
+        shape.setColor(btnColor.a400); // Color
         shape.circle(bounds.x + bounds.width - RADIUS, bounds.y + RADIUS + RADIUS, RADIUS);
         shape.circle(bounds.x + RADIUS, bounds.y + RADIUS + RADIUS, RADIUS);
         shape.circle(bounds.x + bounds.width - RADIUS, bounds.y + bounds.height - RADIUS, RADIUS);
@@ -146,10 +145,9 @@ public class MyButton {
         shape.rect(bounds.x + bounds.width - RADIUS * 2, bounds.y + RADIUS * 2, RADIUS * 2, bounds.height - RADIUS * 3);
         shape.end();
     }
-
-    private void drawPressedButtonWithoutText(){
+    private void drawPressedButtonWithoutText(ShapeRenderer shape){
         shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.setColor(Color.WHITE);
+        shape.setColor(btnColor.a400); // Color
         shape.circle(bounds.x + bounds.width - RADIUS, bounds.y + RADIUS, RADIUS);
         shape.circle(bounds.x + RADIUS, bounds.y + RADIUS, RADIUS);
         shape.circle(bounds.x + bounds.width - RADIUS, bounds.y + bounds.height - RADIUS * 2, RADIUS);
@@ -166,8 +164,12 @@ public class MyButton {
     public void increaseSpeed(){
         speed += originSpeed * 0.1f;
     }
-
     public void setSpeedToOrigin(){
         speed = originSpeed;
     }
+
+    public void changeColor(MyColor btnColor){
+        this.btnColor = btnColor;
+    }
+
 }
