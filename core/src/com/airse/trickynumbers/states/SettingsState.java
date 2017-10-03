@@ -52,9 +52,9 @@ public class SettingsState extends State implements InputProcessor {
         myColor = RColor.getColor();
         shape = new ShapeRenderer();
 
-        btnBottom = new MyButton("background", 100, myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
-        btnMiddle = new MyButton(pref.getInteger("SOUND", 1) == 1? "sound on" : "sound off", 100, myColor, PADDING, PADDING + buttonHeight + GAP, w - PADDING * 2, buttonHeight, font);
-        btnTop = new MyButton(pref.getInteger("MUSIC", 1) == 1? "music on" : "music off", 100, myColor, PADDING, PADDING + (buttonHeight + GAP) * 2, w - PADDING * 2, buttonHeight, font);
+        btnBottom = new MyButton("BACKGROUND", 100, myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
+        btnMiddle = new MyButton(pref.getInteger("SOUND", 1) == 1? "SOUND ON" : "SOUND OFF", 100, myColor, PADDING, PADDING + buttonHeight + GAP, w - PADDING * 2, buttonHeight, font);
+        btnTop = new MyButton(pref.getInteger("MUSIC", 1) == 1? "MUSIC ON" : "MUSIC OFF", 100, myColor, PADDING, PADDING + (buttonHeight + GAP) * 2, w - PADDING * 2, buttonHeight, font);
     }
 
     @Override
@@ -194,12 +194,12 @@ public class SettingsState extends State implements InputProcessor {
         if (pref.getInteger("SOUND", 1) == 0) {
             pref.putInteger("SOUND", 1);
             pref.flush();
-            btnMiddle.setText("sound on");
+            btnMiddle.setText("SOUND ON");
         }
         else {
             pref.putInteger("SOUND", 0);
             pref.flush();
-            btnMiddle.setText("sound off");
+            btnMiddle.setText("SOUND OFF");
         }
     }
     private void switchMusic(){
@@ -207,12 +207,12 @@ public class SettingsState extends State implements InputProcessor {
         if (pref.getInteger("MUSIC", 1) == 0) {
             pref.putInteger("MUSIC", 1);
             pref.flush();
-            btnTop.setText("music on");
+            btnTop.setText("MUSIC ON");
         }
         else {
             pref.putInteger("MUSIC", 0);
             pref.flush();
-            btnTop.setText("music off");
+            btnTop.setText("MUSIC OFF");
         }
     }
     private void playClick(){
