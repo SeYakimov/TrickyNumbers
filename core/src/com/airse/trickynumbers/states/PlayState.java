@@ -1,6 +1,5 @@
 package com.airse.trickynumbers.states;
 
-import com.airse.trickynumbers.TrickyNumbers;
 import com.airse.trickynumbers.models.MyButton;
 import com.airse.trickynumbers.models.MyColor;
 import com.airse.trickynumbers.models.RColor;
@@ -9,20 +8,18 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-import com.sun.corba.se.spi.copyobject.CopyobjectDefaults;
 
 import java.util.Random;
 
@@ -31,32 +28,21 @@ public class PlayState extends State implements InputProcessor {
     private enum State{NEW_GAME, RUNNING, GAMEOVER, MOVE_LEFT, MOVE_RIGHT, PAUSE}
     private long startTime;
     private int h, w, tenth, buttonHeight,buttonHeightGameOver ;
-    private int BUTTON_GAP;
+    private int GAP;
     private Vector2 PADDING;
     private MyButton buttonTop, buttonMiddle, buttonBottom;
     private MyButton btnGameOver, btnScore, btnHighScore;
     private int counter, score;
     private BitmapFont normal, small, big;
+    private Sound click;
+    private Music music;
+
     private State state, currentState;
     private ShapeRenderer shape;
     private Preferences pref;
     private boolean flag;
     private GlyphLayout glyphLayout;
     private AssetManager manager;
-
-    private MyColor red;
-    private MyColor pink;
-    private MyColor purple;
-    private MyColor indigo;
-    private MyColor light_blue;
-    private MyColor cyan;
-    private MyColor teal;
-    private MyColor light_green;
-    private MyColor lime;
-    private MyColor yellow;
-    private MyColor amber;
-    private MyColor orange;
-    private Array<MyColor> colors;
     private MyColor myColor;
 
     private int originSpeed;
@@ -65,7 +51,7 @@ public class PlayState extends State implements InputProcessor {
     private int start, finish;
     private boolean isFirstTime;
 
-    private Texture bg;
+    private Texture BGDark, BGWhite;
 
     public PlayState(GameStateManager gsm, AssetManager manager) {
         super(gsm);
@@ -92,45 +78,30 @@ public class PlayState extends State implements InputProcessor {
         state = State.NEW_GAME;
         currentState = state;
         PADDING = new Vector2(tenth * 3, tenth); // 1) left-right, 2) top-bottom
-        BUTTON_GAP = tenth / 2;
-        buttonHeight = (h - ((int)PADDING.y + BUTTON_GAP) * 2) / 3;
-        buttonHeightGameOver = (h - ((int)PADDING.y + BUTTON_GAP) * 2) / 6;
+        GAP = tenth / 2;
+        buttonHeight = (h - ((int)PADDING.y + GAP) * 2) / 3;
+        buttonHeightGameOver = (h - ((int)PADDING.y + GAP) * 2) / 6;
         normal = manager.get("normal.ttf", BitmapFont.class);
         small = manager.get("small.ttf", BitmapFont.class);
         big = manager.get("big.ttf", BitmapFont.class);
-//        int textSize = (int) (w * 0.25f);
-//        FreeTypeFontGenerator fontGenerator = new FreeTypeFontGenerator(
-//                Gdx.files.internal("fonts/FFFForward.ttf")
-//        );
-//        FreeTypeFontGenerator.FreeTypeFontParameter freeTypeFontParameter =
-//                new FreeTypeFontGenerator.FreeTypeFontParameter();
-//        freeTypeFontParameter.size = textSize;
-//        freeTypeFontParameter.incremental = true;
-//        fontGenerator.generateData(freeTypeFontParameter);
-//        normal = fontGenerator.generateFont(freeTypeFontParameter);
-//
-//        textSize = (int)(w * 0.09f);
-//        freeTypeFontParameter.size = textSize;
-//        small = fontGenerator.generateFont(freeTypeFontParameter);
-//
-//        textSize = (int)(w * 0.47f);
-//        freeTypeFontParameter.size = textSize;
-//        big = fontGenerator.generateFont(freeTypeFontParameter);
+        click = manager.get("sounds/click.mp3", Sound.class);
+        music = manager.get("sounds/BGMusic.mp3", Music.class);
 
-        bg = manager.get("drawables/bg.png");
+        BGDark = manager.get("drawables/BGDark.png");
+        BGWhite = manager.get("drawables/BGWhite.png");
 
         buttonTop = new MyButton("2", 100, myColor, (int)PADDING.x,
-                (int)PADDING.y + 2 * (BUTTON_GAP + buttonHeight),
+                (int)PADDING.y + 2 * (GAP + buttonHeight),
                 w - (int)PADDING.x * 2, buttonHeight, normal);
-        buttonMiddle = new MyButton("1", 100, myColor, (int)PADDING.x, (int)PADDING.y + BUTTON_GAP + buttonHeight,
+        buttonMiddle = new MyButton("1", 100, myColor, (int)PADDING.x, (int)PADDING.y + GAP + buttonHeight,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
         buttonBottom = new MyButton("3", 100, myColor, (int)PADDING.x, (int)PADDING.y,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
 
         btnGameOver = new MyButton("GAMEOVER", 100, myColor, -w + (int)PADDING.y,
-                (int)(PADDING.y + BUTTON_GAP * 2 + buttonHeightGameOver * 5), w - (int)PADDING.y * 2, buttonHeightGameOver, small);
+                (int)(PADDING.y + GAP * 2 + buttonHeightGameOver * 5), w - (int)PADDING.y * 2, buttonHeightGameOver, small);
         btnScore = new MyButton("", 100, myColor, -w + (int)PADDING.y,
-                (int)(PADDING.y + BUTTON_GAP + buttonHeightGameOver), w - (int)PADDING.y * 2, buttonHeightGameOver * 4, big);
+                (int)(PADDING.y + GAP + buttonHeightGameOver), w - (int)PADDING.y * 2, buttonHeightGameOver * 4, big);
         btnHighScore = new MyButton("", 100, myColor, -w + (int)PADDING.y,
                 (int)PADDING.y, w - (int)PADDING.y * 2, buttonHeightGameOver, small);
         newGame();
@@ -200,10 +171,11 @@ public class PlayState extends State implements InputProcessor {
 
         sb.setProjectionMatrix(camera.combined);
         shape.setProjectionMatrix(camera.combined);
-        sb.begin();
-        sb.draw(bg, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
-                h * bg.getWidth() / bg.getHeight(), h);
-        sb.end();
+//        sb.begin();
+//        sb.draw(BGDark, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
+//                h * BGDark.getWidth() / BGDark.getHeight(), h);
+//        sb.end();
+        drawBG(sb);
         switch (state) {
             case NEW_GAME:
                 renderButtons(sb, shape);
@@ -244,6 +216,17 @@ public class PlayState extends State implements InputProcessor {
                 break;
         }
     }
+    private void drawBG(SpriteBatch sb) {
+        sb.begin();
+        if (pref.getInteger("BG", 0) == 0) {
+            sb.draw(BGDark, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
+                    h * BGDark.getWidth() / BGDark.getHeight(), h);
+        } else {
+            sb.draw(BGWhite, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
+                    h * BGDark.getWidth() / BGDark.getHeight(), h);
+        }
+        sb.end();
+    }
     private void renderButtons(SpriteBatch sb, ShapeRenderer shape) {
         buttonBottom.render(sb, shape);
         buttonMiddle.render(sb, shape);
@@ -271,20 +254,24 @@ public class PlayState extends State implements InputProcessor {
         if(keycode == Input.Keys.BACK){
             if (state == State.PAUSE) {
                 state = currentState;
+                music.play();
             }
             else {
                 currentState = state;
                 state = State.PAUSE;
+                music.pause();
             }
         }
 
         if(keycode == Input.Keys.ESCAPE){
             if (state == State.PAUSE) {
                 state = currentState;
+                music.play();
             }
             else {
                 currentState = state;
                 state = State.PAUSE;
+                music.pause();
             }
         }
         return false;
@@ -314,14 +301,17 @@ public class PlayState extends State implements InputProcessor {
             case RUNNING:
                 if (buttonBottom.contains(v)){
                     buttonBottom.setPressed(true);
+                    playClick();
                     check(buttonBottom);
                 }
                 if (buttonMiddle.contains(v)){
                     buttonMiddle.setPressed(true);
+                    playClick();
                     check(buttonMiddle);
                 }
                 if (buttonTop.contains(v)){
                     buttonTop.setPressed(true);
+                    playClick();
                     check(buttonTop);
                 }
                 break;
@@ -329,12 +319,15 @@ public class PlayState extends State implements InputProcessor {
                 if (System.currentTimeMillis() - startTime > 500) {
                     if (btnGameOver.contains(v)){
                         btnGameOver.setPressed(true);
+                        playClick();
                     }
                     if (btnScore.contains(v)){
                         btnScore.setPressed(true);
+                        playClick();
                     }
                     if (btnHighScore.contains(v)){
                         btnHighScore.setPressed(true);
+                        playClick();
                     }
                 }
                 break;
@@ -342,7 +335,6 @@ public class PlayState extends State implements InputProcessor {
                 break;
         }
         Gdx.app.log("state", state.toString());
-
         return true;
     }
 
@@ -353,6 +345,7 @@ public class PlayState extends State implements InputProcessor {
         switch (state){
             case NEW_GAME:
                 state = State.RUNNING;
+                playMusic();
                 break;
             case RUNNING:
                 buttonBottom.setPressed(false);
@@ -377,6 +370,7 @@ public class PlayState extends State implements InputProcessor {
                 }
                 else {
                     state = currentState;
+                    music.play();
                 }
                 break;
             default:
@@ -466,6 +460,7 @@ public class PlayState extends State implements InputProcessor {
         state = State.MOVE_LEFT;
         flag = true;
         moveLeft();
+        //music.stop();
     }
 
     private boolean updateHighScore(){
@@ -534,6 +529,17 @@ public class PlayState extends State implements InputProcessor {
         btnGameOver.changeColor(myColor);
         btnScore.changeColor(myColor);
         btnHighScore.changeColor(myColor);
+    }
+    private void playClick(){
+        if (pref.getInteger("SOUND", 1) == 1) {
+            click.play();
+        }
+    }
+    private void playMusic(){
+        if (pref.getInteger("MUSIC", 1) == 1) {
+            music.setLooping(true);
+            music.play();
+        }
     }
 
 }

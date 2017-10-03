@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -41,7 +43,10 @@ public class LoadingState extends State {
         logoShowed = false;
 
         int textSize = (int)(w * 0.09f);
-        manager.load("drawables/bg.png", Texture.class);
+        manager.load("drawables/BGDark.png", Texture.class);
+        manager.load("drawables/BGWhite.png", Texture.class);
+        manager.load("sounds/click.mp3", Sound.class);
+        manager.load("sounds/BGMusic.mp3", Music.class);
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));

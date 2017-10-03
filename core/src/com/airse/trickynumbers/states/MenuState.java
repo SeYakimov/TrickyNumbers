@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -17,9 +18,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
-
-import java.util.Random;
 
 /**
  * Created by qwert on 28.09.2017.
@@ -30,7 +28,8 @@ public class MenuState extends State implements InputProcessor{
     private final BitmapFont gameName;
     private AssetManager manager;
     private BitmapFont font;
-    private Texture bg;
+    private Sound click;
+    private Texture BGDark, BGWhite;
     private MyButton btnPlay, btnSettings, btnHighscore;
     private ShapeRenderer shape;
     private Preferences pref;
@@ -38,7 +37,7 @@ public class MenuState extends State implements InputProcessor{
     private MyColor myColor;
 
     private int h, w, tenth, buttonHeight, gameNamePosY;
-    private int BUTTON_GAP;
+    private int GAP;
     private int PADDING;
     private GlyphLayout glyphLayout;
 
@@ -60,17 +59,19 @@ public class MenuState extends State implements InputProcessor{
         myColor = RColor.getColor();
         font = manager.get("small.ttf", BitmapFont.class);
         gameName = manager.get("gameName.ttf", BitmapFont.class);
+        click = manager.get("sounds/click.mp3", Sound.class);
         shape = new ShapeRenderer();
 
         tenth = w / 10;
         PADDING = tenth;
-        BUTTON_GAP = tenth / 2;
+        GAP = tenth / 2;
         buttonHeight = (int)(PADDING * 2.2f);
-        gameNamePosY = h - (h - (PADDING + BUTTON_GAP * 2 + buttonHeight * 3) )/ 2;
+        gameNamePosY = h - (h - (PADDING + GAP * 2 + buttonHeight * 3) )/ 2;
 
-        bg = manager.get("drawables/bg.png", Texture.class);
-        btnPlay = new MyButton("PLAY", 100, myColor, PADDING, PADDING + (BUTTON_GAP + buttonHeight) * 2, w - PADDING * 2, buttonHeight, font);
-        btnSettings = new MyButton("SETTINGS", 100, myColor, PADDING, PADDING + BUTTON_GAP + buttonHeight, w - PADDING * 2, buttonHeight, font);
+        BGDark = manager.get("drawables/BGDark.png");
+        BGWhite = manager.get("drawables/BGWhite.png");
+        btnPlay = new MyButton("PLAY", 100, myColor, PADDING, PADDING + (GAP + buttonHeight) * 2, w - PADDING * 2, buttonHeight, font);
+        btnSettings = new MyButton("SETTINGS", 100, myColor, PADDING, PADDING + GAP + buttonHeight, w - PADDING * 2, buttonHeight, font);
         btnHighscore = new MyButton("BEST: " + highScore, 100, myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
 
     }
@@ -99,19 +100,32 @@ public class MenuState extends State implements InputProcessor{
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
-        sb.begin();
-        sb.draw(bg, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
-                h * bg.getWidth() / bg.getHeight(), h);
-
-        sb.end();
-        printText(sb, camera.position.x, gameNamePosY + gameName.getCapHeight() / 1.85f, 0, "TRICKY", myColor.a400, gameName);
-        printText(sb, camera.position.x, gameNamePosY - gameName.getCapHeight() / 1.85f, 0, "NUMBERS", Color.DARK_GRAY, gameName);
-
-
-
+        drawBG(sb);
+        drawGameName(sb);
         renderButtons(sb, shape);
-
     }
+    private void drawBG(SpriteBatch sb) {
+        sb.begin();
+        if (pref.getInteger("BG", 0) == 0) {
+            sb.draw(BGDark, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
+                    h * BGDark.getWidth() / BGDark.getHeight(), h);
+        }
+        else {
+            sb.draw(BGWhite, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
+                    h * BGDark.getWidth() / BGDark.getHeight(), h);
+        }
+        sb.end();
+    }
+    private void drawGameName(SpriteBatch sb) {
+        printText(sb, camera.position.x, gameNamePosY + gameName.getCapHeight() / 1.85f, 0, "TRICKY", myColor.a400, gameName);
+        if (pref.getInteger("BG", 0) == 0) {
+            printText(sb, camera.position.x, gameNamePosY - gameName.getCapHeight() / 1.85f, 0, "NUMBERS", Color.WHITE, gameName);
+        }
+        else {
+            printText(sb, camera.position.x, gameNamePosY - gameName.getCapHeight() / 1.85f, 0, "NUMBERS", Color.DARK_GRAY, gameName);
+        }
+    }
+
 
     @Override
     public void dispose() {
@@ -150,13 +164,15 @@ public class MenuState extends State implements InputProcessor{
         Vector2 v = normalize(screenX, screenY);
         if (btnPlay.contains(v)){
             btnPlay.setPressed(true);
-
+            playClick();
         }
         if (btnSettings.contains(v)){
             btnSettings.setPressed(true);
+            playClick();
         }
         if (btnHighscore.contains(v)){
             btnHighscore.setPressed(true);
+            playClick();
         }
         Gdx.app.log("touch pos", v.toString());
         return false;
@@ -170,6 +186,9 @@ public class MenuState extends State implements InputProcessor{
         btnHighscore.setPressed(false);
         if (btnPlay.contains(v)){
             gsm.push(new PlayState(gsm, manager));
+        }
+        if (btnSettings.contains(v)){
+            gsm.push(new SettingsState(gsm, manager));
         }
         Gdx.app.log("touch pos", v.toString());
         return false;
@@ -210,5 +229,11 @@ public class MenuState extends State implements InputProcessor{
         sb.end();
 
         sb.setTransformMatrix(oldTransformMatrix);
+    }
+
+    private void playClick(){
+        if (pref.getInteger("SOUND", 1) == 1) {
+            click.play();
+        }
     }
 }
