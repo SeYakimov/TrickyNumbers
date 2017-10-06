@@ -28,7 +28,6 @@ public class SettingsState extends State implements InputProcessor {
     private MyButton btnTop, btnMiddle, btnBottom;
     private Preferences pref;
     private BitmapFont font;
-    private Sound click;
     private ShapeRenderer shape;
 
     public SettingsState(GameStateManager gsm, AssetManager manager) {
@@ -46,7 +45,6 @@ public class SettingsState extends State implements InputProcessor {
         GAP = PADDING / 2;
         BGDark = manager.get("drawables/BGDark.png", Texture.class);
         BGWhite = manager.get("drawables/BGWhite.png", Texture.class);
-        click = manager.get("sounds/click.mp3", Sound.class);
         font = manager.get("small.ttf", BitmapFont.class);
         pref = Gdx.app.getPreferences("MY_PREFS");
         myColor = RColor.getColor();
@@ -128,15 +126,12 @@ public class SettingsState extends State implements InputProcessor {
         Vector2 v = normalize(screenX, screenY);
         if (btnTop.contains(v)) {
             btnTop.setPressed(true);
-            playClick();
         }
         if (btnMiddle.contains(v)) {
             btnMiddle.setPressed(true);
-            playClick();
         }
         if (btnBottom.contains(v)) {
             btnBottom.setPressed(true);
-            playClick();
         }
         return false;
     }
@@ -213,11 +208,6 @@ public class SettingsState extends State implements InputProcessor {
             pref.putInteger("MUSIC", 0);
             pref.flush();
             btnTop.setText("MUSIC OFF");
-        }
-    }
-    private void playClick(){
-        if (pref.getInteger("SOUND", 1) == 1) {
-            click.play();
         }
     }
 }

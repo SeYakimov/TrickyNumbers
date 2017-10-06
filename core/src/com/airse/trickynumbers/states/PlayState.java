@@ -34,8 +34,6 @@ public class PlayState extends State implements InputProcessor {
     private MyButton btnGameOver, btnScore, btnHighScore;
     private int counter, score;
     private BitmapFont normal, small, big;
-    private Sound click;
-    private Music music;
 
     private State state, currentState;
     private ShapeRenderer shape;
@@ -84,8 +82,6 @@ public class PlayState extends State implements InputProcessor {
         normal = manager.get("normal.ttf", BitmapFont.class);
         small = manager.get("small.ttf", BitmapFont.class);
         big = manager.get("big.ttf", BitmapFont.class);
-        click = manager.get("sounds/click.mp3", Sound.class);
-        music = manager.get("sounds/BGMusic.mp3", Music.class);
 
         BGDark = manager.get("drawables/BGDark.png");
         BGWhite = manager.get("drawables/BGWhite.png");
@@ -171,10 +167,6 @@ public class PlayState extends State implements InputProcessor {
 
         sb.setProjectionMatrix(camera.combined);
         shape.setProjectionMatrix(camera.combined);
-//        sb.begin();
-//        sb.draw(BGDark, camera.position.x - camera.viewportWidth / 2 - w / 10, camera.position.y - camera.viewportHeight / 2,
-//                h * BGDark.getWidth() / BGDark.getHeight(), h);
-//        sb.end();
         drawBG(sb);
         switch (state) {
             case NEW_GAME:
@@ -254,24 +246,20 @@ public class PlayState extends State implements InputProcessor {
         if(keycode == Input.Keys.BACK){
             if (state == State.PAUSE) {
                 state = currentState;
-                music.play();
             }
             else {
                 currentState = state;
                 state = State.PAUSE;
-                music.pause();
             }
         }
 
         if(keycode == Input.Keys.ESCAPE){
             if (state == State.PAUSE) {
                 state = currentState;
-                music.play();
             }
             else {
                 currentState = state;
                 state = State.PAUSE;
-                music.pause();
             }
         }
         return false;
@@ -301,17 +289,14 @@ public class PlayState extends State implements InputProcessor {
             case RUNNING:
                 if (buttonBottom.contains(v)){
                     buttonBottom.setPressed(true);
-                    playClick();
                     check(buttonBottom);
                 }
                 if (buttonMiddle.contains(v)){
                     buttonMiddle.setPressed(true);
-                    playClick();
                     check(buttonMiddle);
                 }
                 if (buttonTop.contains(v)){
                     buttonTop.setPressed(true);
-                    playClick();
                     check(buttonTop);
                 }
                 break;
@@ -319,15 +304,12 @@ public class PlayState extends State implements InputProcessor {
                 if (System.currentTimeMillis() - startTime > 500) {
                     if (btnGameOver.contains(v)){
                         btnGameOver.setPressed(true);
-                        playClick();
                     }
                     if (btnScore.contains(v)){
                         btnScore.setPressed(true);
-                        playClick();
                     }
                     if (btnHighScore.contains(v)){
                         btnHighScore.setPressed(true);
-                        playClick();
                     }
                 }
                 break;
@@ -345,7 +327,6 @@ public class PlayState extends State implements InputProcessor {
         switch (state){
             case NEW_GAME:
                 state = State.RUNNING;
-                playMusic();
                 break;
             case RUNNING:
                 buttonBottom.setPressed(false);
@@ -370,7 +351,6 @@ public class PlayState extends State implements InputProcessor {
                 }
                 else {
                     state = currentState;
-                    music.play();
                 }
                 break;
             default:
@@ -460,7 +440,6 @@ public class PlayState extends State implements InputProcessor {
         state = State.MOVE_LEFT;
         flag = true;
         moveLeft();
-        //music.stop();
     }
 
     private boolean updateHighScore(){
@@ -529,17 +508,6 @@ public class PlayState extends State implements InputProcessor {
         btnGameOver.changeColor(myColor);
         btnScore.changeColor(myColor);
         btnHighScore.changeColor(myColor);
-    }
-    private void playClick(){
-        if (pref.getInteger("SOUND", 1) == 1) {
-            click.play();
-        }
-    }
-    private void playMusic(){
-        if (pref.getInteger("MUSIC", 1) == 1) {
-            music.setLooping(true);
-            music.play();
-        }
     }
 
 }

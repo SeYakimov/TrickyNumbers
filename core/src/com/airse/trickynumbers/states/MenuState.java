@@ -8,7 +8,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -28,7 +27,6 @@ public class MenuState extends State implements InputProcessor{
     private final BitmapFont gameName;
     private AssetManager manager;
     private BitmapFont font;
-    private Sound click;
     private Texture BGDark, BGWhite;
     private MyButton btnPlay, btnSettings, btnHighscore;
     private ShapeRenderer shape;
@@ -59,7 +57,6 @@ public class MenuState extends State implements InputProcessor{
         myColor = RColor.getColor();
         font = manager.get("small.ttf", BitmapFont.class);
         gameName = manager.get("gameName.ttf", BitmapFont.class);
-        click = manager.get("sounds/click.mp3", Sound.class);
         shape = new ShapeRenderer();
 
         tenth = w / 10;
@@ -164,15 +161,12 @@ public class MenuState extends State implements InputProcessor{
         Vector2 v = normalize(screenX, screenY);
         if (btnPlay.contains(v)){
             btnPlay.setPressed(true);
-            playClick();
         }
         if (btnSettings.contains(v)){
             btnSettings.setPressed(true);
-            playClick();
         }
         if (btnHighscore.contains(v)){
             btnHighscore.setPressed(true);
-            playClick();
         }
         Gdx.app.log("touch pos", v.toString());
         return false;
@@ -229,11 +223,5 @@ public class MenuState extends State implements InputProcessor{
         sb.end();
 
         sb.setTransformMatrix(oldTransformMatrix);
-    }
-
-    private void playClick(){
-        if (pref.getInteger("SOUND", 1) == 1) {
-            click.play();
-        }
     }
 }
