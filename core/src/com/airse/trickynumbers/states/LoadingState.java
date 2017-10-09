@@ -63,7 +63,7 @@ public class LoadingState extends State {
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter size3Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         size3Params.fontFileName = "fonts/FFFForward.ttf";
-        textSize = (int)(w * 0.47f);
+        textSize = (int)(w * 0.46f);
         size3Params.fontParameters.size = textSize;
         size3Params.fontParameters.incremental = true;
 //        size3Params.fontParameters.borderWidth = textBorderWidth;

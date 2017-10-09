@@ -15,11 +15,11 @@ import com.badlogic.gdx.math.Vector3;
  * Created by qwert on 24.09.2017.
  */
 
-public class MyButton {
+public class GameButton extends MyButton {
 
     private int speed;
     private int originSpeed;
-//    private static final String SHADOW = "eaeaea";
+    //    private static final String SHADOW = "eaeaea";
 //    private static final String BORDER = "c5c4c4";
     private int GAP;
     private int RADIUS;
@@ -34,7 +34,7 @@ public class MyButton {
     private int w, h;
     private Vector2 zero;
 
-    public MyButton(String text, MyColor buttonColor, int posX, int posY, int width, int height, BitmapFont font){
+    public GameButton(String text, MyColor buttonColor, int posX, int posY, int width, int height, BitmapFont font){
         this.text = text;
         this.textColor = Color.WHITE;
         this.btnColor = buttonColor;

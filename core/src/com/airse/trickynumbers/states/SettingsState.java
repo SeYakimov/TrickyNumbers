@@ -47,12 +47,12 @@ public class SettingsState extends State implements InputProcessor {
         BGWhite = manager.get("drawables/BGWhite.png", Texture.class);
         font = manager.get("small.ttf", BitmapFont.class);
         pref = Gdx.app.getPreferences("MY_PREFS");
-        myColor = RColor.getColor();
+        myColor = RColor.getColor(pref.getString("COLOR"));
         shape = new ShapeRenderer();
 
-        btnBottom = new MyButton("BACKGROUND", 100, myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
-        btnMiddle = new MyButton(pref.getInteger("SOUND", 1) == 1? "SOUND ON" : "SOUND OFF", 100, myColor, PADDING, PADDING + buttonHeight + GAP, w - PADDING * 2, buttonHeight, font);
-        btnTop = new MyButton(pref.getInteger("MUSIC", 1) == 1? "MUSIC ON" : "MUSIC OFF", 100, myColor, PADDING, PADDING + (buttonHeight + GAP) * 2, w - PADDING * 2, buttonHeight, font);
+        btnBottom = new MyButton("BACKGROUND", myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
+        btnMiddle = new MyButton(pref.getInteger("SOUND", 1) == 1? "SOUND ON" : "SOUND OFF", myColor, PADDING, PADDING + buttonHeight + GAP, w - PADDING * 2, buttonHeight, font);
+        btnTop = new MyButton(pref.getInteger("MUSIC", 1) == 1? "MUSIC ON" : "MUSIC OFF", myColor, PADDING + (buttonHeight + GAP) * 2, PADDING, w - PADDING * 2, buttonHeight, font);
     }
 
     @Override

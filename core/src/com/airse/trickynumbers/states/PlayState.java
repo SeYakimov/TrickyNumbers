@@ -8,8 +8,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -66,12 +64,12 @@ public class PlayState extends State implements InputProcessor {
         originSpeed = (int)(w * 1.5f);
         speed = originSpeed;
         this.manager = manager;
-        myColor = RColor.getColor();
 
         glyphLayout = new GlyphLayout();
         score = 0;
         flag = true;
         pref = Gdx.app.getPreferences("MY_PREFS");
+        myColor = RColor.getColor(pref.getString("COLOR"));
         shape = new ShapeRenderer();
         state = State.NEW_GAME;
         currentState = state;
@@ -86,19 +84,19 @@ public class PlayState extends State implements InputProcessor {
         BGDark = manager.get("drawables/BGDark.png");
         BGWhite = manager.get("drawables/BGWhite.png");
 
-        buttonTop = new MyButton("2", 100, myColor, (int)PADDING.x,
+        buttonTop = new MyButton("2", myColor, (int)PADDING.x,
                 (int)PADDING.y + 2 * (GAP + buttonHeight),
                 w - (int)PADDING.x * 2, buttonHeight, normal);
-        buttonMiddle = new MyButton("1", 100, myColor, (int)PADDING.x, (int)PADDING.y + GAP + buttonHeight,
+        buttonMiddle = new MyButton("1", myColor, (int)PADDING.x, (int)PADDING.y + GAP + buttonHeight,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
-        buttonBottom = new MyButton("3", 100, myColor, (int)PADDING.x, (int)PADDING.y,
+        buttonBottom = new MyButton("3", myColor, (int)PADDING.x, (int)PADDING.y,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
 
-        btnGameOver = new MyButton("GAMEOVER", 100, myColor, -w + (int)PADDING.y,
+        btnGameOver = new MyButton("GAMEOVER", myColor, -w + (int)PADDING.y,
                 (int)(PADDING.y + GAP * 2 + buttonHeightGameOver * 5), w - (int)PADDING.y * 2, buttonHeightGameOver, small);
-        btnScore = new MyButton("", 100, myColor, -w + (int)PADDING.y,
+        btnScore = new MyButton("", myColor, -w + (int)PADDING.y,
                 (int)(PADDING.y + GAP + buttonHeightGameOver), w - (int)PADDING.y * 2, buttonHeightGameOver * 4, big);
-        btnHighScore = new MyButton("", 100, myColor, -w + (int)PADDING.y,
+        btnHighScore = new MyButton("", myColor, -w + (int)PADDING.y,
                 (int)PADDING.y, w - (int)PADDING.y * 2, buttonHeightGameOver, small);
         newGame();
     }
@@ -422,7 +420,6 @@ public class PlayState extends State implements InputProcessor {
     }
 
     private void newGame(){
-        changeButtonsColor();
         counter = 1;
         score = 0;
         updateButtons(3, 0);
@@ -430,6 +427,7 @@ public class PlayState extends State implements InputProcessor {
         if (!isFirstTime){
             moveRight();
             state = State.MOVE_RIGHT;
+            changeButtonsColor();
         }
         else {
             isFirstTime = false;
