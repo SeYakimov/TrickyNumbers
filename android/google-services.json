@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "947748040691",
+    "firebase_url": "https://qwerty-8b541.firebaseio.com",
+    "project_id": "qwerty-8b541",
+    "storage_bucket": "qwerty-8b541.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:947748040691:android:9e6fa9642b3e858c",
+        "android_client_info": {
+          "package_name": "com.airse.trickynumbers"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "947748040691-eaa0jrho60ono2i0ipvf2h5glck768o0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEXhNBFE9WBM-5gW6-7-LHIStvQ08SsZs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

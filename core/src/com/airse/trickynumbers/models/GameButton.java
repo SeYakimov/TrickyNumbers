@@ -10,10 +10,6 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
-/**
- * Created by qwert on 24.09.2017.
- */
-
 public class GameButton extends MyButton {
 
     private int speed;
@@ -49,11 +45,11 @@ public class GameButton extends MyButton {
     public void render(SpriteBatch sb, ShapeRenderer shape) {
         if (isPressed){
             drawPressedButtonWithoutText(shape);
-            printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 - GAP / 2, 0, text, textColor);
+            printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 - GAP / 2, text, textColor);
         }
         else{
             drawNotPressedButtonWithoutText(shape);
-            printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 + GAP / 2, 0, text, textColor);
+            printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 + GAP / 2, text, textColor);
         }
     }
     @Override
@@ -76,24 +72,31 @@ public class GameButton extends MyButton {
         text = "" + number;
     }
 
-    private void printText(SpriteBatch sb, float posX, float posY, float angle, String text, Color color) {
-        Matrix4 oldTransformMatrix = sb.getTransformMatrix().cpy();
-
-        Matrix4 mx4Font = new Matrix4();
-        mx4Font.rotate(new Vector3(0, 0, 1), angle);
-        mx4Font.trn(posX, posY, 0);
-        sb.setTransformMatrix(mx4Font);
-
+    private void printText(SpriteBatch sb, float posX, float posY, String text, Color color) {
         sb.begin();
         font.setColor(color);
         glyphLayout.setText(font, text);
-        float winnerTextHeight = glyphLayout.height;
-        float winnerTextWidth = glyphLayout.width - (winnerTextHeight / 10);
-        font.draw(sb, glyphLayout, - (winnerTextWidth / 2), winnerTextHeight / 2);
+        font.draw(sb, glyphLayout, posX - glyphLayout.width / 2 + glyphLayout.height / 20, posY + glyphLayout.height / 2);
         sb.end();
-
-        sb.setTransformMatrix(oldTransformMatrix);
     }
+//    private void printText(SpriteBatch sb, float posX, float posY, float angle, String text, Color color) {
+//        Matrix4 oldTransformMatrix = sb.getTransformMatrix().cpy();
+//
+//        Matrix4 mx4Font = new Matrix4();
+//        mx4Font.rotate(new Vector3(0, 0, 1), angle);
+//        mx4Font.trn(posX, posY, 0);
+//        sb.setTransformMatrix(mx4Font);
+//
+//        sb.begin();
+//        font.setColor(color);
+//        glyphLayout.setText(font, text);
+//        float winnerTextHeight = glyphLayout.height;
+//        float winnerTextWidth = glyphLayout.width - (winnerTextHeight / 10);
+//        font.draw(sb, glyphLayout, - (winnerTextWidth / 2), winnerTextHeight / 2);
+//        sb.end();
+//
+//        sb.setTransformMatrix(oldTransformMatrix);
+//    }
 
     private void drawNotPressedButtonWithoutText(ShapeRenderer shape){
         //Shadow

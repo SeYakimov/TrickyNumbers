@@ -4,10 +4,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
-/**
- * Created by qwert on 24.09.2017.
- */
-
 public class ImageButton extends MyButton {
 
     private Texture t;
@@ -26,9 +22,7 @@ public class ImageButton extends MyButton {
             drawNotPressedButtonWithoutText(shape);
         }
 
-        sb.begin();
         drawTexture(sb, t);
-        sb.end();
     }
 
     @Override
@@ -80,7 +74,9 @@ public class ImageButton extends MyButton {
             texX = bounds.x + bounds.width / 2 - bounds.height / 2 + GAP * 1.5f;
             texY = bounds.y + GAP * 2;
         }
+        sb.begin();
         sb.draw(t, texX, texY, bounds.height - GAP * 3, bounds.height - GAP * 3);
+        sb.end();
     }
     public void setTexture(Texture t){
         this.t = t;

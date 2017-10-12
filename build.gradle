@@ -8,6 +8,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
+        // Firebase
+        classpath 'com.google.gms:google-services:3.1.0'
     }
 }
 
@@ -76,6 +78,7 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
 
         compile 'com.google.android.gms:play-services-ads:11.2.0'
+
     }
 }
 

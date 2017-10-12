@@ -90,7 +90,7 @@ public class PlayState extends State implements InputProcessor {
         buttonHeightGameOver = (h - ((int)PADDING.y + GAP) * 2) / 6;
         buttonHeightScore = h - (int)((buttonHeightGameOver + PADDING.y + GAP) * 2 + PADDING.x);
         PADDING_GAMEOVER = (h - buttonHeightScore - buttonHeightGameOver * 2 - GAP * 2) / 2;
-        buttonHeight = (h - ((int)PADDING_GAMEOVER + GAP) * 2) / 3;
+        buttonHeight = (h - (PADDING_GAMEOVER + GAP) * 2) / 3;
                 normal = manager.get("normal.ttf", BitmapFont.class);
         small = manager.get("small.ttf", BitmapFont.class);
         big = manager.get("big.ttf", BitmapFont.class);
@@ -100,11 +100,11 @@ public class PlayState extends State implements InputProcessor {
 
         myColor = RColor.getColor(pref.getString("COLOR"));
         btnTop = new GameButton("2", myColor, (int)PADDING.x,
-                (int)PADDING_GAMEOVER + 2 * (GAP + buttonHeight),
+                PADDING_GAMEOVER + 2 * (GAP + buttonHeight),
                 w - (int)PADDING.x * 2, buttonHeight, normal);
-        btnMiddle = new GameButton("1", myColor, (int)PADDING.x, (int)PADDING_GAMEOVER + GAP + buttonHeight,
+        btnMiddle = new GameButton("1", myColor, (int)PADDING.x, PADDING_GAMEOVER + GAP + buttonHeight,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
-        btnBottom = new GameButton("3", myColor, (int)PADDING.x, (int)PADDING_GAMEOVER,
+        btnBottom = new GameButton("3", myColor, (int)PADDING.x, PADDING_GAMEOVER,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
 
         btnGameOver = new TextButton("GAMEOVER", myColor, -w + (int)PADDING.y,
@@ -206,7 +206,7 @@ public class PlayState extends State implements InputProcessor {
                 shape.rect(0, 0, w, h);
                 shape.end();
                 Gdx.gl.glDisable(GL20.GL_BLEND);
-                printText(sb, camera.position.x, camera.position.y, 0, "TAP TO PLAY", Color.WHITE, small);
+                printText(sb, camera.position.x, camera.position.y, "TAP TO PLAY", Color.WHITE, small);
                 break;
             case RUNNING:
                 renderButtons(sb, shape);
@@ -230,11 +230,11 @@ public class PlayState extends State implements InputProcessor {
                 shape.rect(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2, w, h);
                 shape.end();
                 Gdx.gl.glDisable(GL20.GL_BLEND);
-                printText(sb, camera.position.x, camera.position.y + camera.viewportHeight / 6, 0, "GO TO MENU", Color.WHITE, small);
-                printText(sb, camera.position.x, camera.position.y - camera.viewportHeight / 6, 0, "CONTINUE", Color.WHITE, small);
+                printText(sb, camera.position.x, camera.position.y + camera.viewportHeight / 6, "GO TO MENU", Color.WHITE, small);
+                printText(sb, camera.position.x, camera.position.y - camera.viewportHeight / 6, "CONTINUE", Color.WHITE, small);
                 break;
         }
-        printText(sb, 50, 50, 0, "" + adCounter, Color.WHITE, small);
+        printText(sb, 50, 50, "" + adCounter, Color.WHITE, small);
     }
     private void drawBG(SpriteBatch sb) {
         sb.begin();
@@ -292,22 +292,18 @@ public class PlayState extends State implements InputProcessor {
         }
         return false;
     }
-
     @Override
     public boolean keyUp(int keycode) {
         return false;
     }
-
     @Override
     public boolean keyTyped(char character) {
         return false;
     }
-
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         return true;
     }
-
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 v = normalize(screenX, screenY);
@@ -347,8 +343,6 @@ public class PlayState extends State implements InputProcessor {
         Gdx.app.log("state", state.toString());
         return true;
     }
-
-
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Vector2 v = normalize(screenX, screenY);
@@ -386,12 +380,10 @@ public class PlayState extends State implements InputProcessor {
         }
         return true;
     }
-
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         return false;
     }
-
     @Override
     public boolean scrolled(int amount) {
         return false;
@@ -409,7 +401,6 @@ public class PlayState extends State implements InputProcessor {
     private boolean isRightAnswer(GameButton button){
         return button.getNumber() == counter;
     }
-
     private void updateButtons(int n, int m) {
         Random rand = new Random();
         int top = 0;
@@ -434,7 +425,6 @@ public class PlayState extends State implements InputProcessor {
         btnMiddle.setBoundsToOriginPosition();
         btnBottom.setBoundsToOriginPosition();
     }
-
     private void check(GameButton btn) {
         if (isRightAnswer(btn)){
             counter++;
@@ -448,7 +438,6 @@ public class PlayState extends State implements InputProcessor {
             gameOver();
         }
     }
-
     private void newGame(){
         counter = 1;
         score = 0;
@@ -509,23 +498,13 @@ public class PlayState extends State implements InputProcessor {
         start = (int)camera.position.x;
         finish = start - distance;
     }
-    private void printText(SpriteBatch sb, float posX, float posY, float angle, String text, Color color, BitmapFont font) {
-        Matrix4 oldTransformMatrix = sb.getTransformMatrix().cpy();
 
-        Matrix4 mx4Font = new Matrix4();
-        mx4Font.rotate(new Vector3(0, 0, 1), angle);
-        mx4Font.trn(posX, posY, 0);
-        sb.setTransformMatrix(mx4Font);
-
+    private void printText(SpriteBatch sb, float posX, float posY, String text, Color color, BitmapFont font) {
         sb.begin();
         font.setColor(color);
         glyphLayout.setText(font, text);
-        float winnerTextHeight = glyphLayout.height;
-        float winnerTextWidth = glyphLayout.width - (winnerTextHeight / 10);
-        font.draw(sb, glyphLayout, - (winnerTextWidth / 2), winnerTextHeight / 2);
+        font.draw(sb, glyphLayout, posX - glyphLayout.width / 2 + glyphLayout.height / 20, posY + glyphLayout.height / 2);
         sb.end();
-
-        sb.setTransformMatrix(oldTransformMatrix);
     }
 
     private void changeButtonsColor(){

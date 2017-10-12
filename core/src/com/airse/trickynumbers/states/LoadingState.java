@@ -15,10 +15,6 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
 
-/**
- * Created by qwert on 25.09.2017.
- */
-
 public class LoadingState extends State {
 
     private AssetManager manager;
@@ -33,6 +29,7 @@ public class LoadingState extends State {
         super(gsm);
         this.manager = manager;
         this.handler = handler;
+        handler.showAds(false);
 
         percent = 0;
         shape = new ShapeRenderer();

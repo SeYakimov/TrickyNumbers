@@ -13,8 +13,6 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
 public class AndroidLauncher extends AndroidApplication implements IActivityRequestHandler {
@@ -31,10 +29,11 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 			switch(msg.what) {
 				case SHOW_ADS:
 					//adView.setVisibility(View.VISIBLE);
-					showOrLoadInterstital();
+					showOrLoadInterstitial();
 					break;
 				case HIDE_ADS:
 					//adView.setVisibility(View.GONE);
+					loadInterstitial();
 					break;
 			}
 		}
@@ -91,7 +90,7 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 
 		setContentView(main_layout);
 	}
-	public void showOrLoadInterstital() {
+	public void showOrLoadInterstitial() {
 		try {
 			runOnUiThread(new Runnable() {
 				public void run() {
@@ -107,6 +106,21 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 						interstitialAd.loadAd(interstitialRequest);
 						Toast.makeText(getApplicationContext(), "Loading Interstitial", Toast.LENGTH_SHORT).show();
 					}
+				}
+			});
+		} catch (Exception e) {
+		}
+	}
+	public void loadInterstitial() {
+		try {
+			runOnUiThread(new Runnable() {
+				public void run() {
+					AdRequest interstitialRequest = new AdRequest.Builder()
+							.addTestDevice("BA4A61503489F890AA607747073F1F6A")
+							.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+							.build();
+					interstitialAd.loadAd(interstitialRequest);
+					Toast.makeText(getApplicationContext(), "Loading Interstitial", Toast.LENGTH_SHORT).show();
 				}
 			});
 		} catch (Exception e) {
