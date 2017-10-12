@@ -1,5 +1,6 @@
 package com.airse.trickynumbers.states;
 
+import com.airse.trickynumbers.IActivityRequestHandler;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
@@ -26,10 +27,12 @@ public class LoadingState extends State {
     private ShapeRenderer shape;
     private Texture logo;
     private boolean logoShowed;
+    private IActivityRequestHandler handler;
 
-    public LoadingState(AssetManager manager, GameStateManager gsm) {
+    public LoadingState(AssetManager manager, GameStateManager gsm, IActivityRequestHandler handler) {
         super(gsm);
         this.manager = manager;
+        this.handler = handler;
 
         percent = 0;
         shape = new ShapeRenderer();
@@ -37,37 +40,35 @@ public class LoadingState extends State {
         w = Gdx.graphics.getWidth();
         logoShowed = false;
 
-        int textSize = (int)(w * 0.09f);
         manager.load("drawables/BGDark.png", Texture.class);
         manager.load("drawables/BGWhite.png", Texture.class);
+        manager.load("drawables/soundOn.png", Texture.class);
+        manager.load("drawables/soundOff.png", Texture.class);
+        manager.load("drawables/star.png", Texture.class);
+
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
+
+        int textSize = (int)(w * 0.08f);
         FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         size2Params.fontFileName = "fonts/FFFForward.ttf";
         size2Params.fontParameters.size = textSize;
         size2Params.fontParameters.incremental = true;
-        //size2Params.fontParameters.borderWidth = textBorderWidth;
-        //size2Params.fontParameters.borderColor = Color.LIGHT_GRAY;
         manager.load("small.ttf", BitmapFont.class, size2Params);
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter size1Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         size1Params.fontFileName = "fonts/FFFForward.ttf";
-        textSize = (int) (w * 0.25f);
-        int textBorderWidth = h / 600;
+        textSize = (int) (w * 0.16f);
         size1Params.fontParameters.size = textSize;
         size1Params.fontParameters.incremental = true;
-//        size1Params.fontParameters.borderWidth = textBorderWidth;
-//        size1Params.fontParameters.borderColor = Color.LIGHT_GRAY;
         manager.load("normal.ttf", BitmapFont.class, size1Params);
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter size3Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         size3Params.fontFileName = "fonts/FFFForward.ttf";
-        textSize = (int)(w * 0.46f);
+        textSize = (int)(w * 0.24f);
         size3Params.fontParameters.size = textSize;
         size3Params.fontParameters.incremental = true;
-//        size3Params.fontParameters.borderWidth = textBorderWidth;
-//        size3Params.fontParameters.borderColor = Color.LIGHT_GRAY;
         manager.load("big.ttf", BitmapFont.class, size3Params);
 
         FreetypeFontLoader.FreeTypeFontLoaderParameter size4Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
@@ -75,8 +76,6 @@ public class LoadingState extends State {
         textSize = (int)(w * 0.125f);
         size4Params.fontParameters.size = textSize;
         size4Params.fontParameters.incremental = true;
-//        size3Params.fontParameters.borderWidth = textBorderWidth;
-//        size3Params.fontParameters.borderColor = Color.LIGHT_GRAY;
         manager.load("gameName.ttf", BitmapFont.class, size4Params);
 
         logo = new Texture("drawables/EAST71.png");
@@ -99,9 +98,8 @@ public class LoadingState extends State {
     }
     @Override
     public void update(float dt) {
-
         if (manager.update() && logoShowed ) {
-            gsm.push(new MenuState(gsm, manager));
+            gsm.push(new MenuState(gsm, manager, handler));
         }
         percent = Interpolation.linear.apply(percent, manager.getProgress(), 0.1f);
         if (percent > 0.99f) {
@@ -110,7 +108,6 @@ public class LoadingState extends State {
     }
     @Override
     public void render(SpriteBatch sb) {
-
         sb.begin();
         sb.draw(logo, w / 10, h / 2 - logoH / 2, logoW, logoH);
         sb.end();

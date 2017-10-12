@@ -1,6 +1,5 @@
 package com.airse.trickynumbers.models;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -19,48 +18,35 @@ public class GameButton extends MyButton {
 
     private int speed;
     private int originSpeed;
-    //    private static final String SHADOW = "eaeaea";
-//    private static final String BORDER = "c5c4c4";
-    private int GAP;
-    private int RADIUS;
-    private String text;
-    private Rectangle bounds;
     private Rectangle origin;
-    private boolean isPressed;
-    private BitmapFont font;
-    private GlyphLayout glyphLayout;
-    private Color textColor;
-    private MyColor btnColor;
-    private int w, h;
     private Vector2 zero;
 
+    private BitmapFont font;
+    private String text;
+    private Color textColor;
+    private GlyphLayout glyphLayout;
+
     public GameButton(String text, MyColor buttonColor, int posX, int posY, int width, int height, BitmapFont font){
+        super(buttonColor, posX, posY, width, height);
+
         this.text = text;
         this.textColor = Color.WHITE;
-        this.btnColor = buttonColor;
-        bounds = new Rectangle(posX, posY, width, height);
-        origin = new Rectangle(posX, posY, width, height);
         this.font = font;
-
-        w = Gdx.graphics.getWidth();
-        h = Gdx.graphics.getHeight();
-        GAP = w / 40;
-        //RADIUS = GAP / 4;
-        RADIUS = 0;
-        isPressed = false;
         glyphLayout = new GlyphLayout();
+
         originSpeed = w / 4;
         speed = originSpeed;
         zero = new Vector2(0, 0);
+        origin = new Rectangle(posX, posY, width, height);
     }
 
+    @Override
     public void update(float dt){
         bounds.x = Math.max(bounds.x - dt * speed, zero.x);
         bounds.width = Math.min(bounds.width + dt * 2 * speed, w);
     }
-
+    @Override
     public void render(SpriteBatch sb, ShapeRenderer shape) {
-
         if (isPressed){
             drawPressedButtonWithoutText(shape);
             printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 - GAP / 2, 0, text, textColor);
@@ -69,16 +55,13 @@ public class GameButton extends MyButton {
             drawNotPressedButtonWithoutText(shape);
             printText(sb, bounds.x + bounds.width / 2, bounds.y + bounds.height / 2 + GAP / 2, 0, text, textColor);
         }
-
     }
-
+    @Override
     public void dispose(){
+        super.dispose();
         font.dispose();
     }
 
-    public Rectangle getBounds() {
-        return bounds;
-    }
     public void setBoundsToOriginPosition() {
         bounds.x = origin.x;
         bounds.y = origin.y;
@@ -86,23 +69,11 @@ public class GameButton extends MyButton {
         bounds.height = origin.height;
     }
 
-    public boolean contains(Vector2 v){
-        return bounds.contains(v);
-    }
-
-    public void setPressed(boolean flag){
-        isPressed = flag;
-    }
-
     public int getNumber() {
         return Integer.parseInt(text);
     }
     public void setNumber(int number) {
         text = "" + number;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     private void printText(SpriteBatch sb, float posX, float posY, float angle, String text, Color color) {
@@ -167,9 +138,4 @@ public class GameButton extends MyButton {
     public void setSpeedToOrigin(){
         speed = originSpeed;
     }
-
-    public void changeColor(MyColor btnColor){
-        this.btnColor = btnColor;
-    }
-
 }

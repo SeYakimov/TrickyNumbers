@@ -1,14 +1,17 @@
 package com.airse.trickynumbers.states;
 
-import com.airse.trickynumbers.models.MyButton;
+import com.airse.trickynumbers.IActivityRequestHandler;
+import com.airse.trickynumbers.models.ImageButton;
 import com.airse.trickynumbers.models.MyColor;
 import com.airse.trickynumbers.models.RColor;
+import com.airse.trickynumbers.models.TextButton;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
@@ -26,9 +29,12 @@ public class MenuState extends State implements InputProcessor{
 
     private final BitmapFont gameName;
     private AssetManager manager;
+    private IActivityRequestHandler handler;
+    private boolean AD_ENABLED;
     private BitmapFont font;
-    private Texture BGDark, BGWhite;
-    private MyButton btnPlay, btnSettings, btnHighscore, btnTop, btnMiddle, btnBottom;
+    private Texture BGDark, BGWhite, soundOn, soundOff, star;
+    private TextButton btnPlay, btnHighscore, btnBG;
+    private ImageButton btnSwitchAD, btnSound;
     private ShapeRenderer shape;
     private Preferences pref;
     private int highScore;
@@ -39,9 +45,12 @@ public class MenuState extends State implements InputProcessor{
     private int PADDING;
     private GlyphLayout glyphLayout;
 
+    private boolean isBackKeyPressed;
 
-    public MenuState(GameStateManager gsm, AssetManager manager) {
+    public MenuState(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler) {
         super(gsm);
+        this.handler = handler;
+        handler.showAds(false);
         Gdx.input.setInputProcessor(this);
         Gdx.input.setCatchBackKey(true);
         h = Gdx.graphics.getHeight();
@@ -52,13 +61,18 @@ public class MenuState extends State implements InputProcessor{
         glyphLayout = new GlyphLayout();
 
         pref = Gdx.app.getPreferences("MY_PREFS");
+        AD_ENABLED = pref.getBoolean("AD_ENABLED", true);
         highScore = pref.getInteger("HIGHSCORE", 0);
         myColor = RColor.getColor();
         pref.putString("COLOR", myColor.name);
         pref.flush();
         font = manager.get("small.ttf", BitmapFont.class);
         gameName = manager.get("gameName.ttf", BitmapFont.class);
+        soundOn = manager.get("drawables/soundOn.png");
+        soundOff = manager.get("drawables/soundOff.png");
+        star = manager.get("drawables/star.png");
         shape = new ShapeRenderer();
+        isBackKeyPressed = false;
 
         tenth = w / 10;
         PADDING = tenth;
@@ -69,14 +83,14 @@ public class MenuState extends State implements InputProcessor{
 
         BGDark = manager.get("drawables/BGDark.png");
         BGWhite = manager.get("drawables/BGWhite.png");
-        btnPlay = new MyButton("PLAY", myColor, PADDING, PADDING + (GAP + buttonHeight) * 2, w - PADDING * 2, buttonHeight, font);
-        //btnSettings = new MyButton("SETTINGS", myColor, PADDING, PADDING + GAP + buttonHeight, w - PADDING * 2, buttonHeight, font);
-        btnHighscore = new MyButton("BEST: " + highScore, myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
+        btnPlay = new TextButton("PLAY", myColor, PADDING, PADDING + (GAP + buttonHeight) * 2, w - PADDING * 2, buttonHeight, font);
+        btnHighscore = new TextButton("BEST: " + highScore, myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
 
-
-        btnBottom = new MyButton("BG", myColor, PADDING, PADDING + GAP + buttonHeight, buttonWidth, buttonHeight, font);
-        btnMiddle = new MyButton(pref.getInteger("SOUND", 1) == 1? "S ON" : "S OFF", myColor, PADDING + GAP + buttonWidth, PADDING + buttonHeight + GAP, buttonWidth, buttonHeight, font);
-        btnTop = new MyButton(pref.getInteger("MUSIC", 1) == 1? "M ON" : "M OFF", myColor, PADDING + GAP * 2 + buttonWidth * 2, PADDING + GAP + buttonHeight, buttonWidth, buttonHeight, font);
+        btnBG = new TextButton("BG", myColor, PADDING, PADDING + GAP + buttonHeight, buttonWidth, buttonHeight, font);
+        btnSound = new ImageButton(myColor, PADDING + GAP + buttonWidth, PADDING + buttonHeight + GAP,
+                buttonWidth, buttonHeight, pref.getInteger("SOUND", 1) == 1 ? soundOn : soundOff);
+        btnSwitchAD = new ImageButton(myColor, PADDING + GAP * 2 + buttonWidth * 2, PADDING + GAP + buttonHeight,
+                buttonWidth, buttonHeight, star);
 
     }
 
@@ -104,9 +118,21 @@ public class MenuState extends State implements InputProcessor{
     @Override
     public void render(SpriteBatch sb) {
         sb.setProjectionMatrix(camera.combined);
+        shape.setProjectionMatrix(camera.combined);
         drawBG(sb);
         drawGameName(sb);
         renderButtons(sb, shape);
+        if (isBackKeyPressed){
+            Gdx.gl.glEnable(GL20.GL_BLEND);
+            Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA,GL20.GL_ONE_MINUS_SRC_ALPHA);
+            shape.begin(ShapeRenderer.ShapeType.Filled);
+            shape.setColor(0.1f, 0.1f, 0.1f, 0.9f);
+            shape.rect(camera.position.x - camera.viewportWidth / 2, camera.position.y - camera.viewportHeight / 2, w, h);
+            shape.end();
+            Gdx.gl.glDisable(GL20.GL_BLEND);
+            printText(sb, camera.position.x, camera.position.y + camera.viewportHeight / 6, 0, "EXIT", Color.WHITE, font);
+            printText(sb, camera.position.x, camera.position.y - camera.viewportHeight / 6, 0, "CONTINUE", Color.WHITE, font);
+        }
     }
     private void drawBG(SpriteBatch sb) {
         sb.begin();
@@ -129,110 +155,113 @@ public class MenuState extends State implements InputProcessor{
             printText(sb, camera.position.x, gameNamePosY - gameName.getCapHeight() / 1.85f, 0, "NUMBERS", Color.DARK_GRAY, gameName);
         }
     }
-
+    private void renderButtons(SpriteBatch sb, ShapeRenderer shape){
+        btnPlay.render(sb, shape);
+        btnHighscore.render(sb, shape);
+        btnSwitchAD.render(sb, shape);
+        btnSound.render(sb, shape);
+        btnBG.render(sb, shape);
+    }
 
     @Override
     public void dispose() {
         shape.dispose();
         btnPlay.dispose();
-        btnSettings.dispose();
         btnHighscore.dispose();
-    }
-
-    private void renderButtons(SpriteBatch sb, ShapeRenderer shape){
-        btnPlay.render(sb, shape);
-        //btnSettings.render(sb, shape);
-        btnHighscore.render(sb, shape);
-        btnTop.render(sb, shape);
-        btnMiddle.render(sb, shape);
-        btnBottom.render(sb, shape);
+        btnBG.dispose();
+        btnSound.dispose();
+        btnSwitchAD.dispose();
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        if (keycode == Input.Keys.BACK) {
-            Gdx.app.exit();
+        if(keycode == Input.Keys.BACK){
+            isBackKeyPressed = !isBackKeyPressed;
         }
         return false;
     }
-
     @Override
     public boolean keyUp(int keycode) {
         return false;
     }
-
     @Override
     public boolean keyTyped(char character) {
         return false;
     }
-
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 v = normalize(screenX, screenY);
-        if (btnPlay.contains(v)){
-            btnPlay.setPressed(true);
+        if (isBackKeyPressed){
+
         }
-//        if (btnSettings.contains(v)){
-//            btnSettings.setPressed(true);
-//        }
-        if (btnHighscore.contains(v)){
-            btnHighscore.setPressed(true);
+        else{
+            if (btnPlay.contains(v)){
+                btnPlay.setPressed(true);
+            }
+            if (btnHighscore.contains(v)){
+                btnHighscore.setPressed(true);
+            }
+            if (btnSwitchAD.contains(v)) {
+                btnSwitchAD.setPressed(true);
+            }
+            if (btnSound.contains(v)) {
+                btnSound.setPressed(true);
+            }
+            if (btnBG.contains(v)) {
+                btnBG.setPressed(true);
+            }
         }
-        if (btnTop.contains(v)) {
-            btnTop.setPressed(true);
-        }
-        if (btnMiddle.contains(v)) {
-            btnMiddle.setPressed(true);
-        }
-        if (btnBottom.contains(v)) {
-            btnBottom.setPressed(true);
-        }
+
         Gdx.app.log("touch pos", v.toString());
         return false;
     }
-
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Vector2 v = normalize(screenX, screenY);
-        btnPlay.setPressed(false);
-        //btnSettings.setPressed(false);
-        btnHighscore.setPressed(false);
-        if (btnPlay.contains(v)){
-            gsm.push(new PlayState(gsm, manager));
+        if (isBackKeyPressed){
+            if (v.y > camera.position.y) {
+                Gdx.app.exit();
+            }
+            else {
+                isBackKeyPressed = false;
+            }
         }
-        btnTop.setPressed(false);
-        btnMiddle.setPressed(false);
-        btnBottom.setPressed(false);
-        if (btnTop.contains(v)) {
-            switchMusic();
+        else{
+            btnPlay.setPressed(false);
+            btnHighscore.setPressed(false);
+            btnSound.setPressed(false);
+            btnBG.setPressed(false);
+            btnSwitchAD.setPressed(false);
+
+            if (btnPlay.contains(v)){
+                gsm.push(new PlayState(gsm, manager, handler));
+            }
+            if (btnSwitchAD.contains(v)) {
+                switchAD_ENABLED();
+            }
+            if (btnSound.contains(v)) {
+                switchSound();
+            }
+            if (btnBG.contains(v)) {
+                changeBG();
+            }
         }
-        if (btnMiddle.contains(v)) {
-            switchSound();
-        }
-        if (btnBottom.contains(v)) {
-            changeBG();
-        }
-//        if (btnSettings.contains(v)){
-//            gsm.push(new SettingsState(gsm, manager));
-//        }
-        Gdx.app.log("touch pos", v.toString());
+
         return false;
     }
-
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         return false;
     }
-
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
         return false;
     }
-
     @Override
     public boolean scrolled(int amount) {
         return false;
     }
+
     private Vector2 normalize(int x, int y){
         return new Vector2(x * camera.viewportWidth / w, (h - y) * camera.viewportHeight / h);
     }
@@ -255,6 +284,7 @@ public class MenuState extends State implements InputProcessor{
 
         sb.setTransformMatrix(oldTransformMatrix);
     }
+
     private void changeBG() {
         if (pref.getInteger("BG", 0) == 0) {
             pref.putInteger("BG", 1);
@@ -265,31 +295,29 @@ public class MenuState extends State implements InputProcessor{
             pref.flush();
         }
     }
-
     private void switchSound(){
 
         if (pref.getInteger("SOUND", 1) == 0) {
             pref.putInteger("SOUND", 1);
             pref.flush();
-            btnMiddle.setText("S ON");
+            btnSound.setTexture(soundOn);
+
         }
         else {
             pref.putInteger("SOUND", 0);
             pref.flush();
-            btnMiddle.setText("S OFF");
+            btnSound.setTexture(soundOff);
         }
     }
-    private void switchMusic(){
-
-        if (pref.getInteger("MUSIC", 1) == 0) {
-            pref.putInteger("MUSIC", 1);
+    private void switchAD_ENABLED(){
+        if (pref.getBoolean("AD_ENABLED", true)) {
+            pref.putBoolean("AD_ENABLED", false);
             pref.flush();
-            btnTop.setText("M ON");
+
         }
         else {
-            pref.putInteger("MUSIC", 0);
+            pref.putBoolean("AD_ENABLED", true);
             pref.flush();
-            btnTop.setText("M OFF");
         }
     }
 }

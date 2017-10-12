@@ -1,8 +1,10 @@
 package com.airse.trickynumbers.states;
 
-import com.airse.trickynumbers.models.MyButton;
+import com.airse.trickynumbers.IActivityRequestHandler;
+import com.airse.trickynumbers.models.GameButton;
 import com.airse.trickynumbers.models.MyColor;
 import com.airse.trickynumbers.models.RColor;
+import com.airse.trickynumbers.models.TextButton;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -23,13 +25,15 @@ import java.util.Random;
 
 public class PlayState extends State implements InputProcessor {
 
+
     private enum State{NEW_GAME, RUNNING, GAMEOVER, MOVE_LEFT, MOVE_RIGHT, PAUSE}
     private long startTime;
-    private int h, w, tenth, buttonHeight,buttonHeightGameOver ;
+    private int h, w, tenth, buttonHeight,buttonHeightGameOver, buttonHeightScore;
     private int GAP;
     private Vector2 PADDING;
-    private MyButton buttonTop, buttonMiddle, buttonBottom;
-    private MyButton btnGameOver, btnScore, btnHighScore;
+    private int PADDING_GAMEOVER;
+    private GameButton btnTop, btnMiddle, btnBottom;
+    private TextButton btnGameOver, btnScore, btnHighScore;
     private int counter, score;
     private BitmapFont normal, small, big;
 
@@ -39,19 +43,23 @@ public class PlayState extends State implements InputProcessor {
     private boolean flag;
     private GlyphLayout glyphLayout;
     private AssetManager manager;
+    private IActivityRequestHandler handler;
     private MyColor myColor;
 
     private int originSpeed;
     private float speed;
     private int distance;
     private int start, finish;
-    private boolean isFirstTime;
+    private boolean isFirstTime, doCount, showAd;
+    private int adCounter, AD_FREQUENCY;
+    private boolean AD_ENABLED;
 
     private Texture BGDark, BGWhite;
 
-    public PlayState(GameStateManager gsm, AssetManager manager) {
+    public PlayState(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler) {
         super(gsm);
         this.manager = manager;
+        this.handler = handler;
         Gdx.input.setInputProcessor(this);
         Gdx.input.setCatchBackKey(true);
         h = Gdx.graphics.getHeight();
@@ -65,39 +73,46 @@ public class PlayState extends State implements InputProcessor {
         speed = originSpeed;
         this.manager = manager;
 
+        pref = Gdx.app.getPreferences("MY_PREFS");
         glyphLayout = new GlyphLayout();
         score = 0;
         flag = true;
-        pref = Gdx.app.getPreferences("MY_PREFS");
-        myColor = RColor.getColor(pref.getString("COLOR"));
+        adCounter = 1;
+        AD_FREQUENCY = 4;
+        AD_ENABLED = pref.getBoolean("AD_ENABLED", true);
+        doCount = true;
+        showAd = false;
         shape = new ShapeRenderer();
         state = State.NEW_GAME;
         currentState = state;
         PADDING = new Vector2(tenth * 3, tenth); // 1) left-right, 2) top-bottom
         GAP = tenth / 2;
-        buttonHeight = (h - ((int)PADDING.y + GAP) * 2) / 3;
         buttonHeightGameOver = (h - ((int)PADDING.y + GAP) * 2) / 6;
-        normal = manager.get("normal.ttf", BitmapFont.class);
+        buttonHeightScore = h - (int)((buttonHeightGameOver + PADDING.y + GAP) * 2 + PADDING.x);
+        PADDING_GAMEOVER = (h - buttonHeightScore - buttonHeightGameOver * 2 - GAP * 2) / 2;
+        buttonHeight = (h - ((int)PADDING_GAMEOVER + GAP) * 2) / 3;
+                normal = manager.get("normal.ttf", BitmapFont.class);
         small = manager.get("small.ttf", BitmapFont.class);
         big = manager.get("big.ttf", BitmapFont.class);
 
         BGDark = manager.get("drawables/BGDark.png");
         BGWhite = manager.get("drawables/BGWhite.png");
 
-        buttonTop = new MyButton("2", myColor, (int)PADDING.x,
-                (int)PADDING.y + 2 * (GAP + buttonHeight),
+        myColor = RColor.getColor(pref.getString("COLOR"));
+        btnTop = new GameButton("2", myColor, (int)PADDING.x,
+                (int)PADDING_GAMEOVER + 2 * (GAP + buttonHeight),
                 w - (int)PADDING.x * 2, buttonHeight, normal);
-        buttonMiddle = new MyButton("1", myColor, (int)PADDING.x, (int)PADDING.y + GAP + buttonHeight,
+        btnMiddle = new GameButton("1", myColor, (int)PADDING.x, (int)PADDING_GAMEOVER + GAP + buttonHeight,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
-        buttonBottom = new MyButton("3", myColor, (int)PADDING.x, (int)PADDING.y,
+        btnBottom = new GameButton("3", myColor, (int)PADDING.x, (int)PADDING_GAMEOVER,
                 w - (int)PADDING.x * 2, buttonHeight, normal);
 
-        btnGameOver = new MyButton("GAMEOVER", myColor, -w + (int)PADDING.y,
-                (int)(PADDING.y + GAP * 2 + buttonHeightGameOver * 5), w - (int)PADDING.y * 2, buttonHeightGameOver, small);
-        btnScore = new MyButton("", myColor, -w + (int)PADDING.y,
-                (int)(PADDING.y + GAP + buttonHeightGameOver), w - (int)PADDING.y * 2, buttonHeightGameOver * 4, big);
-        btnHighScore = new MyButton("", myColor, -w + (int)PADDING.y,
-                (int)PADDING.y, w - (int)PADDING.y * 2, buttonHeightGameOver, small);
+        btnGameOver = new TextButton("GAMEOVER", myColor, -w + (int)PADDING.y,
+                PADDING_GAMEOVER + GAP * 2 + buttonHeightGameOver + buttonHeightScore, w - (int)PADDING.y * 2, buttonHeightGameOver, small);
+        btnScore = new TextButton("", myColor, -w + (int)PADDING.y,
+                PADDING_GAMEOVER + GAP + buttonHeightGameOver, w - (int)PADDING.y * 2, buttonHeightScore, big);
+        btnHighScore = new TextButton("", myColor, -w + (int)PADDING.y,
+                PADDING_GAMEOVER, w - (int)PADDING.y * 2, buttonHeightGameOver, small);
         newGame();
     }
 
@@ -120,20 +135,34 @@ public class PlayState extends State implements InputProcessor {
     public void update(float dt) {
         switch (state) {
             case NEW_GAME:
+                if (doCount) {
+                    adCounter++;
+                    doCount = false;
+                }
+                if (AD_ENABLED && showAd && adCounter % AD_FREQUENCY == 0) {
+                    handler.showAds(true);
+                    showAd = false;
+                }
                 break;
             case RUNNING:
-                if (buttonBottom.check()) {
+                if (!doCount){
+                    doCount = true;
+                }
+                if (AD_ENABLED && !showAd){
+                    showAd = true;
+                }
+                if (btnBottom.check()) {
                     gameOver();
                 }
-                if (buttonMiddle.check()) {
+                if (btnMiddle.check()) {
                     gameOver();
                 }
-                if (buttonTop.check()) {
+                if (btnTop.check()) {
                     gameOver();
                 }
-                buttonTop.update(dt);
-                buttonMiddle.update(dt);
-                buttonBottom.update(dt);
+                btnTop.update(dt);
+                btnMiddle.update(dt);
+                btnBottom.update(dt);
                 break;
             case GAMEOVER:
                 break;
@@ -205,6 +234,7 @@ public class PlayState extends State implements InputProcessor {
                 printText(sb, camera.position.x, camera.position.y - camera.viewportHeight / 6, 0, "CONTINUE", Color.WHITE, small);
                 break;
         }
+        printText(sb, 50, 50, 0, "" + adCounter, Color.WHITE, small);
     }
     private void drawBG(SpriteBatch sb) {
         sb.begin();
@@ -218,18 +248,18 @@ public class PlayState extends State implements InputProcessor {
         sb.end();
     }
     private void renderButtons(SpriteBatch sb, ShapeRenderer shape) {
-        buttonBottom.render(sb, shape);
-        buttonMiddle.render(sb, shape);
-        buttonTop.render(sb, shape);
+        btnBottom.render(sb, shape);
+        btnMiddle.render(sb, shape);
+        btnTop.render(sb, shape);
         btnGameOver.render(sb, shape);
         btnScore.render(sb, shape);
         btnHighScore.render(sb, shape);
     }
     @Override
     public void dispose() {
-        buttonBottom.dispose();
-        buttonMiddle.dispose();
-        buttonTop.dispose();
+        btnBottom.dispose();
+        btnMiddle.dispose();
+        btnTop.dispose();
         btnHighScore.dispose();
         btnScore.dispose();
         btnGameOver.dispose();
@@ -285,17 +315,17 @@ public class PlayState extends State implements InputProcessor {
             case NEW_GAME:
                 break;
             case RUNNING:
-                if (buttonBottom.contains(v)){
-                    buttonBottom.setPressed(true);
-                    check(buttonBottom);
+                if (btnBottom.contains(v)){
+                    btnBottom.setPressed(true);
+                    check(btnBottom);
                 }
-                if (buttonMiddle.contains(v)){
-                    buttonMiddle.setPressed(true);
-                    check(buttonMiddle);
+                if (btnMiddle.contains(v)){
+                    btnMiddle.setPressed(true);
+                    check(btnMiddle);
                 }
-                if (buttonTop.contains(v)){
-                    buttonTop.setPressed(true);
-                    check(buttonTop);
+                if (btnTop.contains(v)){
+                    btnTop.setPressed(true);
+                    check(btnTop);
                 }
                 break;
             case GAMEOVER:
@@ -327,14 +357,14 @@ public class PlayState extends State implements InputProcessor {
                 state = State.RUNNING;
                 break;
             case RUNNING:
-                buttonBottom.setPressed(false);
-                buttonMiddle.setPressed(false);
-                buttonTop.setPressed(false);
+                btnBottom.setPressed(false);
+                btnMiddle.setPressed(false);
+                btnTop.setPressed(false);
                 break;
             case GAMEOVER:
-                buttonBottom.setPressed(false);
-                buttonMiddle.setPressed(false);
-                buttonTop.setPressed(false);
+                btnBottom.setPressed(false);
+                btnMiddle.setPressed(false);
+                btnTop.setPressed(false);
                 btnGameOver.setPressed(false);
                 btnScore.setPressed(false);
                 btnHighScore.setPressed(false);
@@ -345,7 +375,7 @@ public class PlayState extends State implements InputProcessor {
             case PAUSE:
                 if (v.y > camera.position.y) {
                     updateHighScore();
-                    gsm.push(new MenuState(gsm, manager));
+                    gsm.push(new MenuState(gsm, manager, handler));
                 }
                 else {
                     state = currentState;
@@ -376,7 +406,7 @@ public class PlayState extends State implements InputProcessor {
         }
     }
 
-    private boolean isRightAnswer(MyButton button){
+    private boolean isRightAnswer(GameButton button){
         return button.getNumber() == counter;
     }
 
@@ -396,16 +426,16 @@ public class PlayState extends State implements InputProcessor {
                 bottom = rand.nextInt(n) + counter + m;
             }
         }
-        buttonTop.setNumber(top);
-        buttonMiddle.setNumber(middle);
-        buttonBottom.setNumber(bottom);
+        btnTop.setNumber(top);
+        btnMiddle.setNumber(middle);
+        btnBottom.setNumber(bottom);
 
-        buttonTop.setBoundsToOriginPosition();
-        buttonMiddle.setBoundsToOriginPosition();
-        buttonBottom.setBoundsToOriginPosition();
+        btnTop.setBoundsToOriginPosition();
+        btnMiddle.setBoundsToOriginPosition();
+        btnBottom.setBoundsToOriginPosition();
     }
 
-    private void check(MyButton btn) {
+    private void check(GameButton btn) {
         if (isRightAnswer(btn)){
             counter++;
             score++;
@@ -453,14 +483,14 @@ public class PlayState extends State implements InputProcessor {
     }
 
     private void increaseSpeed(){
-        buttonTop.increaseSpeed();
-        buttonMiddle.increaseSpeed();
-        buttonBottom.increaseSpeed();
+        btnTop.increaseSpeed();
+        btnMiddle.increaseSpeed();
+        btnBottom.increaseSpeed();
     }
     private void setSpeedToOrigin(){
-        buttonTop.setSpeedToOrigin();
-        buttonMiddle.setSpeedToOrigin();
-        buttonBottom.setSpeedToOrigin();
+        btnTop.setSpeedToOrigin();
+        btnMiddle.setSpeedToOrigin();
+        btnBottom.setSpeedToOrigin();
     }
 
     public void moveRight(int distance){
@@ -500,9 +530,9 @@ public class PlayState extends State implements InputProcessor {
 
     private void changeButtonsColor(){
         myColor = RColor.getColor();
-        buttonTop.changeColor(myColor);
-        buttonMiddle.changeColor(myColor);
-        buttonBottom.changeColor(myColor);
+        btnTop.changeColor(myColor);
+        btnMiddle.changeColor(myColor);
+        btnBottom.changeColor(myColor);
         btnGameOver.changeColor(myColor);
         btnScore.changeColor(myColor);
         btnHighScore.changeColor(myColor);
