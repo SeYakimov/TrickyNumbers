@@ -47,7 +47,7 @@ public class LoadingState extends State {
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));
         manager.setLoader(BitmapFont.class, ".ttf", new FreetypeFontLoader(resolver));
 
-        int textSize = (int)(w * 0.08f);
+        int textSize = (int)(w * 0.07f);
         FreetypeFontLoader.FreeTypeFontLoaderParameter size2Params = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
         size2Params.fontFileName = "fonts/FFFForward.ttf";
         size2Params.fontParameters.size = textSize;

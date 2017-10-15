@@ -2,6 +2,7 @@ package com.airse.trickynumbers.states;
 
 import com.airse.trickynumbers.IActivityRequestHandler;
 import com.airse.trickynumbers.models.ImageButton;
+import com.airse.trickynumbers.models.MyButton;
 import com.airse.trickynumbers.models.MyColor;
 import com.airse.trickynumbers.models.RColor;
 import com.airse.trickynumbers.models.TextButton;
@@ -17,37 +18,47 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
-public class MenuState extends State implements InputProcessor{
+import java.util.HashMap;
+import java.util.Map;
 
-    private final BitmapFont gameName;
+class MenuState extends State implements InputProcessor{
+    private class TouchInfo {
+        float touchX = 0;
+        float touchY = 0;
+        boolean touched = false;
+        MyButton button = null;
+    }
+
+    private Map<Integer,TouchInfo> touches = new HashMap<Integer,TouchInfo>();
+
     private AssetManager manager;
     private IActivityRequestHandler handler;
     private boolean AD_ENABLED;
-    private BitmapFont font;
+    private BitmapFont font, gameName;
     private Texture BGDark, BGWhite, soundOn, soundOff, star;
-    private TextButton btnPlay, btnHighscore, btnBG;
+    private TextButton btnPlay, btnAbout, btnBG;
     private ImageButton btnSwitchAD, btnSound;
     private ShapeRenderer shape;
     private Preferences pref;
-    private int highScore;
     private MyColor myColor;
 
-    private int h, w, tenth, buttonHeight, buttonWidth, gameNamePosY;
-    private int GAP;
-    private int PADDING;
+    private int h;
+    private int w;
+    private float gameNamePosY;
     private GlyphLayout glyphLayout;
 
     private boolean isBackKeyPressed;
 
-    public MenuState(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler) {
+    MenuState(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler) {
         super(gsm);
         this.handler = handler;
         //handler.showAds(false);
         Gdx.input.setInputProcessor(this);
+        for(int i = 0; i < 5; i++){
+            touches.put(i, new TouchInfo());
+        }
         Gdx.input.setCatchBackKey(true);
         h = Gdx.graphics.getHeight();
         w = Gdx.graphics.getWidth();
@@ -58,7 +69,6 @@ public class MenuState extends State implements InputProcessor{
 
         pref = Gdx.app.getPreferences("MY_PREFS");
         AD_ENABLED = pref.getBoolean("AD_ENABLED", true);
-        highScore = pref.getInteger("HIGHSCORE", 0);
         myColor = RColor.getColor();
         pref.putString("COLOR", myColor.name);
         pref.flush();
@@ -70,17 +80,16 @@ public class MenuState extends State implements InputProcessor{
         shape = new ShapeRenderer();
         isBackKeyPressed = false;
 
-        tenth = w / 10;
-        PADDING = tenth;
-        GAP = tenth / 2;
-        buttonHeight = (int)(PADDING * 2.2f);
-        buttonWidth = (w - PADDING * 2 - GAP * 2) / 3;
+        float PADDING = w / 10;
+        float GAP = PADDING / 2;
+        float buttonHeight = (int) (PADDING * 2.2f);
+        float buttonWidth = (w - PADDING * 2 - GAP * 2) / 3;
         gameNamePosY = h - (h - (PADDING + GAP * 2 + buttonHeight * 3) )/ 2;
 
         BGDark = manager.get("drawables/BGDark.png");
         BGWhite = manager.get("drawables/BGWhite.png");
         btnPlay = new TextButton("PLAY", myColor, PADDING, PADDING + (GAP + buttonHeight) * 2, w - PADDING * 2, buttonHeight, font);
-        btnHighscore = new TextButton("BEST: " + highScore, myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
+        btnAbout = new TextButton("ABOUT", myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
 
         btnBG = new TextButton("BG", myColor, PADDING, PADDING + GAP + buttonHeight, buttonWidth, buttonHeight, font);
         btnSound = new ImageButton(myColor, PADDING + GAP + buttonWidth, PADDING + buttonHeight + GAP,
@@ -153,7 +162,7 @@ public class MenuState extends State implements InputProcessor{
     }
     private void renderButtons(SpriteBatch sb, ShapeRenderer shape){
         btnPlay.render(sb, shape);
-        btnHighscore.render(sb, shape);
+        btnAbout.render(sb, shape);
         btnSwitchAD.render(sb, shape);
         btnSound.render(sb, shape);
         btnBG.render(sb, shape);
@@ -163,10 +172,12 @@ public class MenuState extends State implements InputProcessor{
     public void dispose() {
         shape.dispose();
         btnPlay.dispose();
-        btnHighscore.dispose();
+        btnAbout.dispose();
         btnBG.dispose();
         btnSound.dispose();
         btnSwitchAD.dispose();
+        BGDark.dispose();
+        BGWhite.dispose();
     }
 
     @Override
@@ -187,21 +198,33 @@ public class MenuState extends State implements InputProcessor{
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector2 v = normalize(screenX, screenY);
-        if (!isBackKeyPressed){
-            if (btnPlay.contains(v)){
-                btnPlay.setPressed(true);
-            }
-            if (btnHighscore.contains(v)){
-                btnHighscore.setPressed(true);
-            }
-            if (btnSwitchAD.contains(v)) {
-                btnSwitchAD.setPressed(true);
-            }
-            if (btnSound.contains(v)) {
-                btnSound.setPressed(true);
-            }
-            if (btnBG.contains(v)) {
-                btnBG.setPressed(true);
+
+        if(pointer < touches.size()){
+            touches.get(pointer).touchX = v.x;
+            touches.get(pointer).touchY = v.y;
+            touches.get(pointer).touched = true;
+
+            if (!isBackKeyPressed){
+                if (btnPlay.contains(v)){
+                    btnPlay.setPressed(true);
+                    touches.get(pointer).button = btnPlay;
+                }
+                if (btnAbout.contains(v)){
+                    btnAbout.setPressed(true);
+                    touches.get(pointer).button = btnAbout;
+                }
+                if (btnSwitchAD.contains(v)) {
+                    btnSwitchAD.setPressed(true);
+                    touches.get(pointer).button = btnSwitchAD;
+                }
+                if (btnSound.contains(v)) {
+                    btnSound.setPressed(true);
+                    touches.get(pointer).button = btnSound;
+                }
+                if (btnBG.contains(v)) {
+                    btnBG.setPressed(true);
+                    touches.get(pointer).button = btnBG;
+                }
             }
         }
         return false;
@@ -209,35 +232,51 @@ public class MenuState extends State implements InputProcessor{
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         Vector2 v = normalize(screenX, screenY);
-        if (isBackKeyPressed){
-            if (v.y > camera.position.y) {
-                Gdx.app.exit();
-            }
-            else {
-                isBackKeyPressed = false;
-            }
-        }
-        else{
-            btnPlay.setPressed(false);
-            btnHighscore.setPressed(false);
-            btnSound.setPressed(false);
-            btnBG.setPressed(false);
-            btnSwitchAD.setPressed(false);
 
-            if (btnPlay.contains(v)){
-                gsm.push(new PlayState(gsm, manager, handler));
-            }
-            if (btnSwitchAD.contains(v)) {
-                switchAD_ENABLED();
-            }
-            if (btnSound.contains(v)) {
-                switchSound();
-            }
-            if (btnBG.contains(v)) {
-                changeBG();
-            }
-        }
+        if(pointer < touches.size()){
+            touches.get(pointer).touchX = 0;
+            touches.get(pointer).touchY = 0;
+            touches.get(pointer).touched = false;
 
+            if (isBackKeyPressed){
+                if (v.y > camera.position.y) {
+                    Gdx.app.exit();
+                }
+                else {
+                    isBackKeyPressed = false;
+                }
+            }
+            else{
+                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnPlay)){
+                    btnPlay.setPressed(false);
+                    if (btnPlay.contains(v)){
+                        gsm.push(new ChooseDifficult(gsm, manager, handler));
+                    }
+                }
+                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnAbout)){
+                    btnAbout.setPressed(false);
+                }
+                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnSound)){
+                    btnSound.setPressed(false);
+                    if (btnSound.contains(v)) {
+                        switchSound();
+                    }
+                }
+                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnBG)){
+                    btnBG.setPressed(false);
+                    if (btnBG.contains(v)) {
+                        changeBG();
+                    }
+                }
+                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnSwitchAD)){
+                    btnSwitchAD.setPressed(false);
+                    if (btnSwitchAD.contains(v)) {
+                        switchAD_ENABLED();
+                    }
+                }
+            }
+
+        }
         return false;
     }
     @Override

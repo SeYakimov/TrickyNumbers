@@ -6,10 +6,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-/**
- * Created by qwert on 24.09.2017.
- */
-
 public class MyButton {
 
     boolean isPressed;
@@ -19,7 +15,7 @@ public class MyButton {
     MyColor btnColor;
     int w, h;
 
-    public MyButton(MyColor buttonColor, int posX, int posY, int width, int height){
+    MyButton(MyColor buttonColor, float posX, float posY, float width, float height){
         w = Gdx.graphics.getWidth();
         h = Gdx.graphics.getHeight();
         this.btnColor = buttonColor;

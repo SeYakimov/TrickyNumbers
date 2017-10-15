@@ -98,14 +98,14 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 						interstitialAd.show();
 						Toast.makeText(getApplicationContext(), "Showing Interstitial", Toast.LENGTH_SHORT).show();
 					}
-					else {
-						AdRequest interstitialRequest = new AdRequest.Builder()
-								.addTestDevice("BA4A61503489F890AA607747073F1F6A")
-								.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-								.build();
-						interstitialAd.loadAd(interstitialRequest);
-						Toast.makeText(getApplicationContext(), "Loading Interstitial", Toast.LENGTH_SHORT).show();
-					}
+//					else {
+//						AdRequest interstitialRequest = new AdRequest.Builder()
+//								.addTestDevice("BA4A61503489F890AA607747073F1F6A")
+//								.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+//								.build();
+//						interstitialAd.loadAd(interstitialRequest);
+//						Toast.makeText(getApplicationContext(), "Loading Interstitial", Toast.LENGTH_SHORT).show();
+//					}
 				}
 			});
 		} catch (Exception e) {

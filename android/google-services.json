@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "947748040691-8nactgk75oq7dsai2r8j35432aca0ugv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.airse.trickynumbers",
+            "certificate_hash": "0f35a215547ade71a44236a5b460de053f6583ed"
+          }
+        },
+        {
           "client_id": "947748040691-eaa0jrho60ono2i0ipvf2h5glck768o0.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "947748040691-eaa0jrho60ono2i0ipvf2h5glck768o0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

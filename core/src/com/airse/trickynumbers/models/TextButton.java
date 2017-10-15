@@ -17,7 +17,7 @@ public class TextButton extends MyButton {
     private Color textColor;
     private GlyphLayout glyphLayout;
 
-    public TextButton(String text, MyColor buttonColor, int posX, int posY, int width, int height, BitmapFont font){
+    public TextButton(String text, MyColor buttonColor, float posX, float posY, float width, float height, BitmapFont font){
         super(buttonColor, posX, posY, width, height);
 
         this.text = text;

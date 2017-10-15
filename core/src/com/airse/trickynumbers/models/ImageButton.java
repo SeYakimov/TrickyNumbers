@@ -8,7 +8,7 @@ public class ImageButton extends MyButton {
 
     private Texture t;
 
-    public ImageButton(MyColor buttonColor, int posX, int posY, int width, int height, Texture t){
+    public ImageButton(MyColor buttonColor, float posX, float posY, float width, float height, Texture t){
         super(buttonColor, posX, posY, width, height);
         this.t = t;
     }
