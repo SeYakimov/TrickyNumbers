@@ -12,6 +12,10 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.east71.trickynumbers.IActivityRequestHandler;
+import com.east71.trickynumbers.models.MyButton;
+import com.east71.trickynumbers.models.MyColor;
+import com.east71.trickynumbers.models.TextButton;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,28 +25,28 @@ class ChooseDifficult extends State implements InputProcessor {
         float touchX = 0;
         float touchY = 0;
         boolean touched = false;
-        com.east71.trickynumbers.models.MyButton button = null;
+        MyButton button = null;
     }
 
     private Map<Integer,TouchInfo> touches = new HashMap<Integer,TouchInfo>();
 
     private AssetManager manager;
-    private com.east71.trickynumbers.IActivityRequestHandler handler;
+    private IActivityRequestHandler handler;
     private boolean AD_ENABLED;
     private BitmapFont gameName;
     private Texture BGDark, BGWhite;
-    private com.east71.trickynumbers.models.TextButton btnEASY, btnMEDIUM, btnHARD, btnEASYHigh, btnMEDIUMHigh, btnHARDHigh;
+    private TextButton btnEASY, btnMEDIUM, btnHARD, btnEASYHigh, btnMEDIUMHigh, btnHARDHigh;
     private ShapeRenderer shape;
     private Preferences pref;
     private int highScore;
-    private com.east71.trickynumbers.models.MyColor myColor;
+    private MyColor myColor;
 
     private int h;
     private int w;
     private float gameNamePosY;
     private GlyphLayout glyphLayout;
 
-    ChooseDifficult(GameStateManager gsm, AssetManager manager, com.east71.trickynumbers.IActivityRequestHandler handler) {
+    ChooseDifficult(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler) {
         super(gsm);
         this.handler = handler;
         Gdx.input.setInputProcessor(this);

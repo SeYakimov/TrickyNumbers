@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGeneratorLoader;
 import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Interpolation;
+import com.east71.trickynumbers.IActivityRequestHandler;
 
 public class LoadingState extends State {
 
@@ -22,9 +23,9 @@ public class LoadingState extends State {
     private ShapeRenderer shape;
     private Texture logo;
     private boolean logoShowed;
-    private com.east71.trickynumbers.IActivityRequestHandler handler;
+    private IActivityRequestHandler handler;
 
-    public LoadingState(AssetManager manager, GameStateManager gsm, com.east71.trickynumbers.IActivityRequestHandler handler) {
+    public LoadingState(AssetManager manager, GameStateManager gsm, IActivityRequestHandler handler) {
         super(gsm);
         this.manager = manager;
         this.handler = handler;
@@ -38,9 +39,6 @@ public class LoadingState extends State {
 
         manager.load("drawables/BGDark.png", Texture.class);
         manager.load("drawables/BGWhite.png", Texture.class);
-        manager.load("drawables/soundOn.png", Texture.class);
-        manager.load("drawables/soundOff.png", Texture.class);
-        manager.load("drawables/star.png", Texture.class);
 
         FileHandleResolver resolver = new InternalFileHandleResolver();
         manager.setLoader(FreeTypeFontGenerator.class, new FreeTypeFontGeneratorLoader(resolver));

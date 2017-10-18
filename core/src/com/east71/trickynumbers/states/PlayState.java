@@ -13,40 +13,46 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.east71.trickynumbers.IActivityRequestHandler;
+import com.east71.trickynumbers.models.GameButton;
+import com.east71.trickynumbers.models.MyColor;
+import com.east71.trickynumbers.models.TextButton;
 
 import java.util.Random;
 
 class PlayState extends State implements InputProcessor {
 
     private enum State{NEW_GAME, RUNNING, GAMEOVER, MOVE_LEFT, MOVE_RIGHT, PAUSE}
+    private State state, currentState;
+
     private long startTime;
     private int h;
     private int w;
-    private com.east71.trickynumbers.models.GameButton gButtons[];
-    private com.east71.trickynumbers.models.TextButton btnGameOver, btnScore, btnHighScore;
     private int counter, score, numOfButtons;
-    private BitmapFont normal, small, big;
-    private Difficulty difficulty;
-
-    private State state, currentState;
-    private ShapeRenderer shape;
-    private Preferences pref;
-    private boolean flag;
-    private GlyphLayout glyphLayout;
-    private AssetManager manager;
-    private com.east71.trickynumbers.IActivityRequestHandler handler;
-    private com.east71.trickynumbers.models.MyColor myColor;
-
     private float speed;
     private int distance;
     private int start, finish;
     private boolean isFirstTime, doCount, showAd;
     private int adCounter, AD_FREQUENCY;
     private boolean AD_ENABLED;
+    private boolean flag;
+    private Difficulty difficulty;
+
+    private GameButton gButtons[];
+    private TextButton btnGameOver, btnScore, btnHighScore;
+
+    private BitmapFont normal, small, big;
+    private ShapeRenderer shape;
+    private Preferences pref;
+    private MyColor myColor;
+    private GlyphLayout glyphLayout;
+    private AssetManager manager;
+    private IActivityRequestHandler handler;
+
 
     private Texture BGDark, BGWhite;
 
-    PlayState(GameStateManager gsm, AssetManager manager, com.east71.trickynumbers.IActivityRequestHandler handler, Difficulty difficulty) {
+    PlayState(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler, Difficulty difficulty) {
         super(gsm);
         this.manager = manager;
         this.handler = handler;
@@ -136,10 +142,6 @@ class PlayState extends State implements InputProcessor {
     public void update(float dt) {
         switch (state) {
             case NEW_GAME:
-                if (doCount) {
-                    adCounter++;
-                    doCount = false;
-                }
                 if (AD_ENABLED && showAd && (adCounter % AD_FREQUENCY == 0)) {
                     handler.showAds(true);
                     showAd = false;
@@ -177,6 +179,10 @@ class PlayState extends State implements InputProcessor {
                 }
                 break;
             case MOVE_RIGHT:
+                if (doCount) {
+                    adCounter++;
+                    doCount = false;
+                }
                 camera.position.x = Math.min(camera.position.x + dt * speed, finish);
                 if (camera.position.x == finish) {
                     state = State.NEW_GAME;
@@ -204,7 +210,7 @@ class PlayState extends State implements InputProcessor {
                 shape.rect(0, 0, w, h);
                 shape.end();
                 Gdx.gl.glDisable(GL20.GL_BLEND);
-                if (adCounter == 2){
+                if (adCounter == 1){
                     printText(sb, camera.position.x, camera.position.y, "  PRESS 1"+ "\n\n" +
                             "   THEN 2"+ "\n\n" +
                             "   THEN 3"+ "\n\n" +
@@ -240,6 +246,8 @@ class PlayState extends State implements InputProcessor {
                 printText(sb, camera.position.x, camera.position.y - camera.viewportHeight / 6, "CONTINUE", Color.WHITE, small);
                 break;
         }
+
+        printText(sb, 50, 50, "" + adCounter, Color.WHITE, small);
     }
     private void drawBG(SpriteBatch sb) {
         sb.begin();
@@ -370,6 +378,7 @@ class PlayState extends State implements InputProcessor {
             case PAUSE:
                 if (v.y > camera.position.y) {
                     updateHighScore();
+                    handler.showAds(false);
                     gsm.push(new MenuState(gsm, manager, handler));
                 }
                 else {
@@ -452,8 +461,6 @@ class PlayState extends State implements InputProcessor {
     private void newGame(){
         counter = 1;
         score = 0;
-        updateButtons(numOfButtons, 0);
-        setSpeedToOrigin();
         if (!isFirstTime){
             moveRight();
             state = State.MOVE_RIGHT;
@@ -462,6 +469,8 @@ class PlayState extends State implements InputProcessor {
         else {
             isFirstTime = false;
         }
+        updateButtons(numOfButtons, 0);
+        setSpeedToOrigin();
     }
     private void gameOver() {
         startTime = System.currentTimeMillis();
