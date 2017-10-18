@@ -65,6 +65,11 @@ public class GameButton extends MyButton {
         bounds.height = origin.height;
     }
 
+    public void reduceBoundsSize(float x){
+        bounds.x = Math.min(bounds.x + x, origin.x);
+        bounds.width = Math.max(bounds.width - 2 * x, origin.width);
+    }
+
     public int getNumber() {
         return Integer.parseInt(text);
     }
@@ -79,24 +84,6 @@ public class GameButton extends MyButton {
         font.draw(sb, glyphLayout, posX - glyphLayout.width / 2 + glyphLayout.height / 20, posY + glyphLayout.height / 2);
         sb.end();
     }
-//    private void printText(SpriteBatch sb, float posX, float posY, float angle, String text, Color color) {
-//        Matrix4 oldTransformMatrix = sb.getTransformMatrix().cpy();
-//
-//        Matrix4 mx4Font = new Matrix4();
-//        mx4Font.rotate(new Vector3(0, 0, 1), angle);
-//        mx4Font.trn(posX, posY, 0);
-//        sb.setTransformMatrix(mx4Font);
-//
-//        sb.begin();
-//        font.setColor(color);
-//        glyphLayout.setText(font, text);
-//        float winnerTextHeight = glyphLayout.height;
-//        float winnerTextWidth = glyphLayout.width - (winnerTextHeight / 10);
-//        font.draw(sb, glyphLayout, - (winnerTextWidth / 2), winnerTextHeight / 2);
-//        sb.end();
-//
-//        sb.setTransformMatrix(oldTransformMatrix);
-//    }
 
     private void drawNotPressedButtonWithoutText(ShapeRenderer shape){
         //Shadow

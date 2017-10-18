@@ -83,7 +83,7 @@ class ChooseDifficult extends State implements InputProcessor {
         btnEASY = new TextButton("EASY", myColor, PADDING,
                 PADDING + 2 * (GAP + buttonHeight),
                 w - PADDING * 2 - GAP - buttonWidth, buttonHeight, font);
-        btnMEDIUM = new TextButton("MEDIUM", myColor, PADDING, PADDING + GAP + buttonHeight,
+        btnMEDIUM = new TextButton("NORMAL", myColor, PADDING, PADDING + GAP + buttonHeight,
                 w - PADDING * 2 - GAP - buttonWidth, buttonHeight, font);
         btnHARD = new TextButton("HARD", myColor, PADDING, PADDING,
                 w - PADDING * 2 - GAP - buttonWidth, buttonHeight, font);

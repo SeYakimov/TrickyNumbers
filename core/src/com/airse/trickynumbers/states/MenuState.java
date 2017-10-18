@@ -38,8 +38,9 @@ class MenuState extends State implements InputProcessor{
     private boolean AD_ENABLED;
     private BitmapFont font, gameName;
     private Texture BGDark, BGWhite, soundOn, soundOff, star;
-    private TextButton btnPlay, btnAbout, btnBG;
-    private ImageButton btnSwitchAD, btnSound;
+    private TextButton btnPlay;
+//    private TextButton btnAbout, btnBG;
+//    private ImageButton btnSwitchAD, btnSound;
     private ShapeRenderer shape;
     private Preferences pref;
     private MyColor myColor;
@@ -88,14 +89,14 @@ class MenuState extends State implements InputProcessor{
 
         BGDark = manager.get("drawables/BGDark.png");
         BGWhite = manager.get("drawables/BGWhite.png");
-        btnPlay = new TextButton("PLAY", myColor, PADDING, PADDING + (GAP + buttonHeight) * 2, w - PADDING * 2, buttonHeight, font);
-        btnAbout = new TextButton("ABOUT", myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
-
-        btnBG = new TextButton("BG", myColor, PADDING, PADDING + GAP + buttonHeight, buttonWidth, buttonHeight, font);
-        btnSound = new ImageButton(myColor, PADDING + GAP + buttonWidth, PADDING + buttonHeight + GAP,
-                buttonWidth, buttonHeight, pref.getInteger("SOUND", 1) == 1 ? soundOn : soundOff);
-        btnSwitchAD = new ImageButton(myColor, PADDING + GAP * 2 + buttonWidth * 2, PADDING + GAP + buttonHeight,
-                buttonWidth, buttonHeight, star);
+        btnPlay = new TextButton("PLAY", myColor, PADDING * 2, PADDING * 2 + GAP + buttonHeight, w - PADDING * 4, buttonHeight, font);
+//        btnAbout = new TextButton("ABOUT", myColor, PADDING, PADDING, w - PADDING * 2, buttonHeight, font);
+//
+//        btnBG = new TextButton("BG", myColor, PADDING, PADDING + GAP + buttonHeight, buttonWidth, buttonHeight, font);
+//        btnSound = new ImageButton(myColor, PADDING + GAP + buttonWidth, PADDING + buttonHeight + GAP,
+//                buttonWidth, buttonHeight, pref.getInteger("SOUND", 1) == 1 ? soundOn : soundOff);
+//        btnSwitchAD = new ImageButton(myColor, PADDING + GAP * 2 + buttonWidth * 2, PADDING + GAP + buttonHeight,
+//                buttonWidth, buttonHeight, star);
 
     }
 
@@ -162,20 +163,20 @@ class MenuState extends State implements InputProcessor{
     }
     private void renderButtons(SpriteBatch sb, ShapeRenderer shape){
         btnPlay.render(sb, shape);
-        btnAbout.render(sb, shape);
-        btnSwitchAD.render(sb, shape);
-        btnSound.render(sb, shape);
-        btnBG.render(sb, shape);
+//        btnAbout.render(sb, shape);
+//        btnSwitchAD.render(sb, shape);
+//        btnSound.render(sb, shape);
+//        btnBG.render(sb, shape);
     }
 
     @Override
     public void dispose() {
         shape.dispose();
         btnPlay.dispose();
-        btnAbout.dispose();
-        btnBG.dispose();
-        btnSound.dispose();
-        btnSwitchAD.dispose();
+//        btnAbout.dispose();
+//        btnBG.dispose();
+//        btnSound.dispose();
+//        btnSwitchAD.dispose();
         BGDark.dispose();
         BGWhite.dispose();
     }
@@ -209,22 +210,22 @@ class MenuState extends State implements InputProcessor{
                     btnPlay.setPressed(true);
                     touches.get(pointer).button = btnPlay;
                 }
-                if (btnAbout.contains(v)){
-                    btnAbout.setPressed(true);
-                    touches.get(pointer).button = btnAbout;
-                }
-                if (btnSwitchAD.contains(v)) {
-                    btnSwitchAD.setPressed(true);
-                    touches.get(pointer).button = btnSwitchAD;
-                }
-                if (btnSound.contains(v)) {
-                    btnSound.setPressed(true);
-                    touches.get(pointer).button = btnSound;
-                }
-                if (btnBG.contains(v)) {
-                    btnBG.setPressed(true);
-                    touches.get(pointer).button = btnBG;
-                }
+//                if (btnAbout.contains(v)){
+//                    btnAbout.setPressed(true);
+//                    touches.get(pointer).button = btnAbout;
+//                }
+//                if (btnSwitchAD.contains(v)) {
+//                    btnSwitchAD.setPressed(true);
+//                    touches.get(pointer).button = btnSwitchAD;
+//                }
+//                if (btnSound.contains(v)) {
+//                    btnSound.setPressed(true);
+//                    touches.get(pointer).button = btnSound;
+//                }
+//                if (btnBG.contains(v)) {
+//                    btnBG.setPressed(true);
+//                    touches.get(pointer).button = btnBG;
+//                }
             }
         }
         return false;
@@ -253,27 +254,27 @@ class MenuState extends State implements InputProcessor{
                         gsm.push(new ChooseDifficult(gsm, manager, handler));
                     }
                 }
-                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnAbout)){
-                    btnAbout.setPressed(false);
-                }
-                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnSound)){
-                    btnSound.setPressed(false);
-                    if (btnSound.contains(v)) {
-                        switchSound();
-                    }
-                }
-                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnBG)){
-                    btnBG.setPressed(false);
-                    if (btnBG.contains(v)) {
-                        changeBG();
-                    }
-                }
-                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnSwitchAD)){
-                    btnSwitchAD.setPressed(false);
-                    if (btnSwitchAD.contains(v)) {
-                        switchAD_ENABLED();
-                    }
-                }
+//                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnAbout)){
+//                    btnAbout.setPressed(false);
+//                }
+//                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnSound)){
+//                    btnSound.setPressed(false);
+//                    if (btnSound.contains(v)) {
+//                        switchSound();
+//                    }
+//                }
+//                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnBG)){
+//                    btnBG.setPressed(false);
+//                    if (btnBG.contains(v)) {
+//                        changeBG();
+//                    }
+//                }
+//                if (touches.get(pointer).button != null && touches.get(pointer).button.equals(btnSwitchAD)){
+//                    btnSwitchAD.setPressed(false);
+//                    if (btnSwitchAD.contains(v)) {
+//                        switchAD_ENABLED();
+//                    }
+//                }
             }
 
         }
@@ -314,29 +315,29 @@ class MenuState extends State implements InputProcessor{
             pref.flush();
         }
     }
-    private void switchSound(){
-
-        if (pref.getInteger("SOUND", 1) == 0) {
-            pref.putInteger("SOUND", 1);
-            pref.flush();
-            btnSound.setTexture(soundOn);
-
-        }
-        else {
-            pref.putInteger("SOUND", 0);
-            pref.flush();
-            btnSound.setTexture(soundOff);
-        }
-    }
-    private void switchAD_ENABLED(){
-        if (pref.getBoolean("AD_ENABLED", true)) {
-            pref.putBoolean("AD_ENABLED", false);
-            pref.flush();
-
-        }
-        else {
-            pref.putBoolean("AD_ENABLED", true);
-            pref.flush();
-        }
-    }
+//    private void switchSound(){
+//
+//        if (pref.getInteger("SOUND", 1) == 0) {
+//            pref.putInteger("SOUND", 1);
+//            pref.flush();
+//            btnSound.setTexture(soundOn);
+//
+//        }
+//        else {
+//            pref.putInteger("SOUND", 0);
+//            pref.flush();
+//            btnSound.setTexture(soundOff);
+//        }
+//    }
+//    private void switchAD_ENABLED(){
+//        if (pref.getBoolean("AD_ENABLED", true)) {
+//            pref.putBoolean("AD_ENABLED", false);
+//            pref.flush();
+//
+//        }
+//        else {
+//            pref.putBoolean("AD_ENABLED", true);
+//            pref.flush();
+//        }
+//    }
 }

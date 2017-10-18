@@ -75,11 +75,11 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 		interstitialAd.setAdListener(new AdListener() {
       		@Override
       		public void onAdLoaded() {
-				Toast.makeText(getApplicationContext(), "Finished Loading Interstitial", Toast.LENGTH_SHORT).show();
+//				Toast.makeText(getApplicationContext(), "Finished Loading Interstitial", Toast.LENGTH_SHORT).show();
 			}
      		@Override
       		public void onAdClosed() {
-				Toast.makeText(getApplicationContext(), "Closed Interstitial", Toast.LENGTH_SHORT).show();
+//				Toast.makeText(getApplicationContext(), "Closed Interstitial", Toast.LENGTH_SHORT).show();
 			}
     	});
 		adParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
@@ -96,7 +96,7 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 				public void run() {
 					if (interstitialAd.isLoaded()) {
 						interstitialAd.show();
-						Toast.makeText(getApplicationContext(), "Showing Interstitial", Toast.LENGTH_SHORT).show();
+//						Toast.makeText(getApplicationContext(), "Showing Interstitial", Toast.LENGTH_SHORT).show();
 					}
 //					else {
 //						AdRequest interstitialRequest = new AdRequest.Builder()
@@ -120,7 +120,7 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 							.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
 							.build();
 					interstitialAd.loadAd(interstitialRequest);
-					Toast.makeText(getApplicationContext(), "Loading Interstitial", Toast.LENGTH_SHORT).show();
+//					Toast.makeText(getApplicationContext(), "Loading Interstitial", Toast.LENGTH_SHORT).show();
 				}
 			});
 		} catch (Exception e) {

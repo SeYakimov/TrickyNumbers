@@ -68,7 +68,7 @@ class PlayState extends State implements InputProcessor {
                 numOfButtons = 3;
                 break;
             case HARD:
-                numOfButtons = 4;
+                numOfButtons = 3;
                 break;
         }
         gButtons = new GameButton[numOfButtons];
@@ -88,8 +88,8 @@ class PlayState extends State implements InputProcessor {
         glyphLayout = new GlyphLayout();
         score = 0;
         flag = true;
-        adCounter = 0;
-        AD_FREQUENCY = 4;
+        adCounter = 1;
+        AD_FREQUENCY = 3;
         AD_ENABLED = pref.getBoolean("AD_ENABLED", true);
         doCount = true;
         showAd = false;
@@ -212,7 +212,15 @@ class PlayState extends State implements InputProcessor {
                 shape.rect(0, 0, w, h);
                 shape.end();
                 Gdx.gl.glDisable(GL20.GL_BLEND);
-                printText(sb, camera.position.x, camera.position.y, "TAP TO PLAY", Color.WHITE, small);
+                if (adCounter == 2){
+                    printText(sb, camera.position.x, camera.position.y, "  PRESS 1"+ "\n\n" +
+                            "   THEN 2"+ "\n\n" +
+                            "   THEN 3"+ "\n\n" +
+                            "AND SO ON", Color.WHITE, small);
+                }
+                else{
+                    printText(sb, camera.position.x, camera.position.y, "TAP TO PLAY", Color.WHITE, small);
+                }
                 break;
             case RUNNING:
                 renderButtons(sb, shape);
@@ -240,7 +248,6 @@ class PlayState extends State implements InputProcessor {
                 printText(sb, camera.position.x, camera.position.y - camera.viewportHeight / 6, "CONTINUE", Color.WHITE, small);
                 break;
         }
-        printText(sb, 50, 50, "" + adCounter, Color.WHITE, small);
     }
     private void drawBG(SpriteBatch sb) {
         sb.begin();
@@ -429,7 +436,12 @@ class PlayState extends State implements InputProcessor {
 
 
         for (int i = 0; i < numOfButtons; i++){
-            gButtons[i].setBoundsToOriginPosition();
+            if (difficulty == Difficulty.HARD && state == State.RUNNING){
+                gButtons[i].reduceBoundsSize(w / 5.5f);
+            }
+            else{
+                gButtons[i].setBoundsToOriginPosition();
+            }
         }
     }
     private void check(GameButton btn) {
@@ -549,5 +561,4 @@ class PlayState extends State implements InputProcessor {
         btnScore.changeColor(myColor);
         btnHighScore.changeColor(myColor);
     }
-
 }
