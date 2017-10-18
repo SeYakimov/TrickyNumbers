@@ -18,7 +18,7 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
-        applicationId "com.airse.trickynumbers"
+        applicationId "com.east71.trickynumbers"
         minSdkVersion 14
         targetSdkVersion 24
         versionCode 1
@@ -78,7 +78,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.airse.trickynumbers/com.airse.trickynumbers.AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.east71.trickynumbers/AndroidLauncher'
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.
