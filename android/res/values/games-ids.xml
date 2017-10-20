@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app_id -->
+    <string name="app_id" translatable="false">379997731954</string>
+    <!-- package_name -->
+    <string name="package_name" translatable="false">com.east71.trickynumbers</string>
+    <!-- leaderboard EASYHighscores -->
+    <string name="leaderboard_easyhighscores" translatable="false">CgkI8viEzYcLEAIQAA</string>
+    <!-- leaderboard NORMALHighscores -->
+    <string name="leaderboard_normalhighscores" translatable="false">CgkI8viEzYcLEAIQAg</string>
+    <!-- leaderboard HARDHighscores -->
+    <string name="leaderboard_hardhighscores" translatable="false">CgkI8viEzYcLEAIQAw</string>
+</resources>

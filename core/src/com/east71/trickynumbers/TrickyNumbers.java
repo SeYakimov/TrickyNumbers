@@ -23,7 +23,6 @@ public class TrickyNumbers extends ApplicationAdapter {
 	}
 	@Override
 	public void create () {
-		System.out.println("Та-дам");
 		sb = new SpriteBatch();
 		gsm = new GameStateManager();
 		manager = new AssetManager();

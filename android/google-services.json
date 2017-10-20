@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "379997731954-9uam6gq4ngvbbrr7u0die0d6lv9766mj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.east71.trickynumbers",
+            "certificate_hash": "0f35a215547ade71a44236a5b460de053f6583ed"
+          }
+        },
+        {
+          "client_id": "379997731954-7bg65ngjk77g3ej0cphtln15qt3thdno.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.east71.trickynumbers",
+            "certificate_hash": "5616cd5cff3e8fe3f68b4ca03e1c041d2694f52b"
+          }
+        },
+        {
           "client_id": "379997731954-2ittqrfjlljhjutfphgkatq95d60fb81.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +45,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "379997731954-2ittqrfjlljhjutfphgkatq95d60fb81.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

@@ -78,10 +78,11 @@ class MenuState extends State implements InputProcessor{
         float buttonHeight = (int) (PADDING * 2.2f);
         float buttonWidth = (w - PADDING * 2 - GAP * 2) / 3;
         gameNamePosY = h - (h - (PADDING + GAP * 2 + buttonHeight * 3) )/ 2;
+        float btnPlayPosY = gameNamePosY / 2 - buttonHeight / 2;
 
         BGDark = manager.get("drawables/BGDark.png");
         BGWhite = manager.get("drawables/BGWhite.png");
-        btnPlay = new TextButton("PLAY", myColor, PADDING * 2, PADDING * 2 + GAP + buttonHeight, w - PADDING * 4, buttonHeight, font);
+        btnPlay = new TextButton("PLAY", myColor, PADDING, btnPlayPosY - gameName.getCapHeight() / 1.85f, w - PADDING * 2, buttonHeight, font);
 
     }
 

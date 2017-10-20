@@ -26,8 +26,8 @@ class PlayState extends State implements InputProcessor {
     private State state, currentState;
 
     private long startTime;
-    private int h;
-    private int w;
+    private int h, w;
+    private int GAP;
     private int counter, score, numOfButtons;
     private float speed;
     private int distance;
@@ -96,7 +96,7 @@ class PlayState extends State implements InputProcessor {
         currentState = state;
 
         Vector2 PADDING = new Vector2(tenth * 3, tenth);
-        float GAP = tenth / 2;
+        GAP = tenth / 2;
         float buttonHeightGameOver = (h - ((int) PADDING.y + GAP) * 2) / 6;
         float buttonHeightScore = h - (int) ((buttonHeightGameOver + PADDING.y + GAP) * 2 + PADDING.x);
         float PADDING_GAMEOVER = (h - buttonHeightScore - buttonHeightGameOver * 2 - GAP * 2) / 2;
@@ -211,10 +211,10 @@ class PlayState extends State implements InputProcessor {
                 shape.end();
                 Gdx.gl.glDisable(GL20.GL_BLEND);
                 if (adCounter == 1){
-                    printText(sb, camera.position.x, camera.position.y, "  PRESS 1"+ "\n\n" +
-                            "   THEN 2"+ "\n\n" +
-                            "   THEN 3"+ "\n\n" +
-                            "AND SO ON", Color.WHITE, small);
+                    printText(sb, camera.position.x, camera.position.y + GAP * 4.5f, "PRESS ON 1", Color.WHITE, small);
+                    printText(sb, camera.position.x, camera.position.y + GAP * 1.5f, "THEN ON 2", Color.WHITE, small);
+                    printText(sb, camera.position.x, camera.position.y - GAP * 1.5f, "THEN ON 3", Color.WHITE, small);
+                    printText(sb, camera.position.x, camera.position.y - GAP * 4.5f, "AND SO ON", Color.WHITE, small);
                 }
                 else{
                     printText(sb, camera.position.x, camera.position.y, "TAP TO PLAY", Color.WHITE, small);
@@ -247,7 +247,7 @@ class PlayState extends State implements InputProcessor {
                 break;
         }
 
-        printText(sb, 50, 50, "" + adCounter, Color.WHITE, small);
+//        printText(sb, 50, 50, "" + adCounter, Color.WHITE, small);
     }
     private void drawBG(SpriteBatch sb) {
         sb.begin();
