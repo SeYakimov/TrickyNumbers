@@ -22,6 +22,8 @@ import com.badlogic.gdx.math.Vector2;
 import java.util.HashMap;
 import java.util.Map;
 
+import static javax.swing.text.html.CSS.Attribute.PADDING;
+
 class MenuState extends State implements InputProcessor{
     private class TouchInfo {
         float touchX = 0;
@@ -45,7 +47,7 @@ class MenuState extends State implements InputProcessor{
 
     private int h;
     private int w;
-    private float gameNamePosY;
+    private float gameNamePosY, PADDING;
     private boolean isBackKeyPressed;
 
     MenuState(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler) {
@@ -73,7 +75,7 @@ class MenuState extends State implements InputProcessor{
         shape = new ShapeRenderer();
         isBackKeyPressed = false;
 
-        float PADDING = w / 10;
+        PADDING = w / 10;
         float GAP = PADDING / 2;
         float buttonHeight = (int) (PADDING * 2.2f);
         float buttonWidth = (w - PADDING * 2 - GAP * 2) / 3;
@@ -215,6 +217,12 @@ class MenuState extends State implements InputProcessor{
                     if (btnPlay.contains(v)){
                         gsm.push(new com.east71.trickynumbers.states.ChooseDifficult(gsm, manager, handler));
                     }
+                }
+                if (v.y >= gameNamePosY - gameName.getCapHeight() &&
+                    v.y <= gameNamePosY + gameName.getCapHeight() &&
+                    v.x >= PADDING &&
+                    v.x <= w - PADDING){
+                    changeBG();
                 }
             }
 

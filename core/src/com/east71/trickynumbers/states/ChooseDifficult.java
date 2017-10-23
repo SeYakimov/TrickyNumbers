@@ -43,7 +43,7 @@ class ChooseDifficult extends State implements InputProcessor {
 
     private int h;
     private int w;
-    private float gameNamePosY;
+    private float gameNamePosY, PADDING;
     private GlyphLayout glyphLayout;
 
     ChooseDifficult(GameStateManager gsm, AssetManager manager, IActivityRequestHandler handler) {
@@ -69,7 +69,7 @@ class ChooseDifficult extends State implements InputProcessor {
         gameName = manager.get("gameName.ttf", BitmapFont.class);
         shape = new ShapeRenderer();
 
-        float PADDING = w / 10;
+        PADDING = w / 10;
         float GAP = PADDING / 2;
         float buttonHeight = (int) (PADDING * 2.2f);
         float buttonWidth = buttonHeight;
@@ -261,6 +261,12 @@ class ChooseDifficult extends State implements InputProcessor {
                 if (btnHARDHigh.contains(v)) {
                 }
             }
+            if (v.y >= gameNamePosY - gameName.getCapHeight() &&
+                    v.y <= gameNamePosY + gameName.getCapHeight() &&
+                    v.x >= PADDING &&
+                    v.x <= w - PADDING){
+                changeBG();
+            }
         }
         return false;
     }
@@ -286,5 +292,16 @@ class ChooseDifficult extends State implements InputProcessor {
         glyphLayout.setText(font, text);
         font.draw(sb, glyphLayout, posX - glyphLayout.width / 2 + glyphLayout.height / 20, posY + glyphLayout.height / 2);
         sb.end();
+    }
+
+    private void changeBG() {
+        if (pref.getInteger("BG", 0) == 0) {
+            pref.putInteger("BG", 1);
+            pref.flush();
+        }
+        else {
+            pref.putInteger("BG", 0);
+            pref.flush();
+        }
     }
 }

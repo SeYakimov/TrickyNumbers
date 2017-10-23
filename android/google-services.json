@@ -15,19 +15,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "379997731954-05uo9pd3ls7p5hbhde88nefqkqtv5etg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.east71.trickynumbers",
+            "certificate_hash": "a9dd399a1296adb68767e874f18ccaf0182d2d9d"
+          }
+        },
+        {
+          "client_id": "379997731954-7aueh7f8o9dds1p7muea08oeglhnnqg0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.east71.trickynumbers",
+            "certificate_hash": "5616cd5cff3e8fe3f68b4ca03e1c041d2694f52b"
+          }
+        },
+        {
           "client_id": "379997731954-9uam6gq4ngvbbrr7u0die0d6lv9766mj.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.east71.trickynumbers",
             "certificate_hash": "0f35a215547ade71a44236a5b460de053f6583ed"
-          }
-        },
-        {
-          "client_id": "379997731954-7bg65ngjk77g3ej0cphtln15qt3thdno.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.east71.trickynumbers",
-            "certificate_hash": "5616cd5cff3e8fe3f68b4ca03e1c041d2694f52b"
           }
         },
         {

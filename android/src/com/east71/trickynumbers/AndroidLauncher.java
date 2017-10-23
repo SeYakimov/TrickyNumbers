@@ -85,11 +85,13 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 		try {
 			runOnUiThread(new Runnable() {
 				public void run() {
-					AdRequest interstitialRequest = new AdRequest.Builder()
-							.addTestDevice("BA4A61503489F890AA607747073F1F6A")
-							.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-							.build();
-					interstitialAd.loadAd(interstitialRequest);
+					if (!interstitialAd.isLoading()){
+						AdRequest interstitialRequest = new AdRequest.Builder()
+//								.addTestDevice("BA4A61503489F890AA607747073F1F6A")
+//								.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+								.build();
+						interstitialAd.loadAd(interstitialRequest);
+					}
 				}
 			});
 		} catch (Exception e) {
