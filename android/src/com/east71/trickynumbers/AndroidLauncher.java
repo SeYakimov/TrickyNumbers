@@ -71,8 +71,8 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 					}
 					else {
 						AdRequest interstitialRequest = new AdRequest.Builder()
-//								.addTestDevice("BA4A61503489F890AA607747073F1F6A")
-//								.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+								.addTestDevice("872HEDTG222JQ")
+								.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
 								.build();
 						interstitialAd.loadAd(interstitialRequest);
 					}
@@ -87,8 +87,8 @@ public class AndroidLauncher extends AndroidApplication implements IActivityRequ
 				public void run() {
 					if (!interstitialAd.isLoading()){
 						AdRequest interstitialRequest = new AdRequest.Builder()
-//								.addTestDevice("BA4A61503489F890AA607747073F1F6A")
-//								.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+								.addTestDevice("872HEDTG222JQ")
+								.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
 								.build();
 						interstitialAd.loadAd(interstitialRequest);
 					}
